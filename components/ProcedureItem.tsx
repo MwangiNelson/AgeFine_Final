@@ -6,75 +6,32 @@ interface Procedure {
   href?: string;
 }
 
-interface ProcedureItemProps {
-  procedure: Procedure;
-}
-
-export default function ProcedureItem({ procedure }: ProcedureItemProps) {
+export default function ProcedureItem({ procedure }: { procedure: Procedure }) {
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 16,
-        padding: "18px 0",
-        borderBottom: "0.5px solid var(--line)",
-      }}
+      className="flex items-center gap-4 py-[18px] md:flex-col md:items-start md:gap-5 md:py-8 md:px-7 md:rounded-xl md:bg-ivory md:border md:transition-shadow md:hover:shadow-[0_18px_40px_rgba(60,35,49,0.08)]"
+      style={{ borderColor: "var(--line)", borderBottom: "0.5px solid var(--line)" }}
     >
-      {/* Circular thumbnail placeholder */}
+      {/* Thumbnail */}
       <div
-        style={{
-          flex: "0 0 64px",
-          width: 64,
-          height: 64,
-          borderRadius: "50%",
-          background: "linear-gradient(150deg, var(--cream), var(--blush))",
-        }}
+        className="flex-none w-16 h-16 rounded-full md:w-20 md:h-20"
+        style={{ background: "linear-gradient(150deg, var(--cream), var(--blush))" }}
+        aria-hidden="true"
       />
 
-      {/* Body */}
-      <div style={{ flex: 1 }}>
-        <h3
-          style={{
-            fontFamily: "var(--serif)",
-            fontWeight: 500,
-            fontSize: 20,
-            color: "var(--plum)",
-            lineHeight: 1.1,
-          }}
-        >
+      <div className="flex-1 md:w-full">
+        <h3 className="font-serif font-medium text-plum leading-[1.1] text-[20px] md:text-[24px]">
           {procedure.name}
         </h3>
-        <p
-          style={{
-            fontSize: 11.5,
-            color: "var(--plum-soft)",
-            fontWeight: 300,
-            marginTop: 3,
-            letterSpacing: "0.02em",
-            fontFamily: "var(--sans)",
-          }}
-        >
+        <p className="font-sans font-light text-plum-soft mt-1 md:mt-2 tracking-[0.02em] text-[11.5px] md:text-sm">
           {procedure.description}
         </p>
       </div>
 
-      {/* Book link */}
       <Link
         href={procedure.href ?? "/services"}
-        style={{
-          fontSize: 10.5,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          color: "var(--gold-text)",
-          whiteSpace: "nowrap",
-          textDecoration: "none",
-          border: "1px solid var(--gold-soft)",
-          padding: "9px 13px",
-          borderRadius: 2,
-          transition: "background 0.2s, color 0.2s",
-          fontFamily: "var(--sans)",
-        }}
+        aria-label={`Book ${procedure.name}`}
+        className="btn btn-outline flex-none text-[10.5px] md:text-[11px] md:mt-2 px-3 py-2 md:px-5"
       >
         Book
       </Link>

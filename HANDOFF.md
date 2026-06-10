@@ -12,7 +12,23 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   reduced-motion, AA contrast via `--gold-text` #7E6130 for small text).
 - **M3 Shop** — Supabase schema live + seeded; `/shop` catalogue with category filter,
   `/shop/[slug]` product detail, cart (`lib/cart.ts` pure logic + `lib/cart-context.tsx`
-  provider with localStorage). Header badge reflects global cart. 14 tests pass.
+  provider with localStorage). Header badge reflects global cart.
+- **Responsive redesign** — the site was mobile-only (inline styles, bottom tab bar on every
+  screen). Now fully responsive via a Tailwind v4 design system. Brand tokens are bridged into
+  Tailwind utilities in `app/globals.css` (`@theme inline` → `bg-plum`, `text-rose`, `font-serif`).
+  Reusable component classes there too: `.btn`/`.btn-primary|gold|outline`, `.field-*`, `.surface-card`,
+  `.eyebrow`, `.section-title`. Shared chrome in `components/SiteShell.tsx` (skip link, announcement
+  bar, header, `<main>`, footer, bottom nav). `SiteHeader` = top nav on `md+`, hamburger + focus-trapped
+  drawer on mobile; `BottomNav` is `md:hidden`. All pages use a `max-w` container so desktop no longer
+  looks like a stretched phone. `components/Reveal.tsx` lets server components use scroll-reveal.
+- **M4 Checkout + forms** — `/cart` (qty steppers, remove, totals, sticky summary on desktop),
+  `/checkout` (form → inserts `orders` as `pending_payment` → confirmation with M-Pesa Till +
+  WhatsApp deep link, clears cart), `/services` (treatments + booking form), `/contact` (enquiry
+  form), `/about`. Logic in `lib/checkout.ts` (pure: validators, `buildOrderPayload`,
+  `buildWhatsAppLink`, `buildBookingPayload`) — validation mirrors the live RLS WITH CHECK clauses
+  exactly (verified against the DB). Accessible forms via `components/FormField.tsx`.
+  **47 tests pass** (logic + cart/checkout/booking component tests, all axe-clean). typecheck, lint,
+  and `next build` all green.
 
 ## Supabase
 - Project `AgeFine_Final`, project_id `skhjxnbxamafqknfgqcc`, region eu-west-2.
@@ -27,18 +43,13 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   `NEXT_PUBLIC_WHATSAPP`. Admin needs `SUPABASE_SERVICE_ROLE_KEY` (server only).
 
 ## Remaining milestones
-### M4 — Checkout (manual M-Pesa) + booking/contact forms
-- `/cart`: list items, qty +/-, remove, total (use `useCart`).
-- `/checkout`: form fields `customer_name`, `phone`, `delivery_method` ('delivery'|'pickup'),
-  `address?`, `notes?`. Insert into `orders` with `status='pending_payment'`,
-  `items` jsonb `[{product_id,name,price_kes,qty}]`, `total_kes`. Then confirmation screen:
-  "Pay KES {total} to Buy Goods Till {NEXT_PUBLIC_TILL_NUMBER}" + WhatsApp deep link
-  `https://wa.me/{NEXT_PUBLIC_WHATSAPP}?text=...orderId+summary...`. Clear cart on success.
-  IMPORTANT — RLS `public_insert_orders` requires: customer_name 1–200, phone 5–20,
-  total_kes>=0, items is a JSON array, delivery_method in ('delivery','pickup'). Match exactly.
-- Booking form + contact form insert into `bookings` (name, phone, service, preferred_date?,
-  message?). RLS requires name 1–200, phone 5–20, service 1–200.
-- Tests: pure order-payload builder + WhatsApp-link generator (unit), form validation, axe.
+### M4 — Checkout + booking/contact forms ✅ DONE
+Implemented as described below. `lib/checkout.ts` holds all the pure logic; validation mirrors
+the live RLS WITH CHECK exactly (orders: customer_name 1–200, phone 5–20, total_kes>=0, items is a
+JSON array, delivery_method in delivery|pickup · bookings: name/service 1–200, phone 5–20). The
+checkout never trusts a client total — it derives `total_kes` from the cart. Confirmation shows the
+M-Pesa Till + a `wa.me` deep link and clears the cart. The contact form reuses the booking insert
+with a fixed service of "General enquiry".
 
 ### M5 — Admin dashboard (`/admin`)
 - Supabase Auth (email/password); protect `/admin` (middleware or server check). Create the
@@ -55,9 +66,12 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
 - Full-site axe audit; tap targets >=44px; manual keyboard + screen-reader pass. Update docs.
 
 ## Design fidelity
-Reference prototype `agefine-design/home-mobile.html`. Serif headlines, gold accents on ivory,
-generous whitespace, restrained motion, mobile bottom tab bar. Keep colours as CSS variables —
-client's final brand hex may replace them.
+Reference prototype `agefine-design/home-mobile.html` for the mobile language: serif headlines,
+gold accents on ivory, generous whitespace, restrained motion, mobile bottom tab bar. This is now
+extended to a proper responsive desktop experience (top nav, constrained `max-w` container,
+multi-column grids, hover states) — keeping the same luxury palette/typography, just no longer
+"a phone app on a big screen". Colours stay as CSS variables in `:root` (and are bridged into
+Tailwind via `@theme inline`) so the client's final brand hex is still a single-file change.
 
 ## Gotchas
 - Next 16: `params`/`searchParams` are Promises — `await` them in server components.

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Brand tokens — single source of truth.
+   Client's final brand hex may replace these values.
+   ============================================================ */
 :root {
   --ivory: #FBF7F2;
   --cream: #F4EAE0;
@@ -16,18 +20,49 @@
   --line: rgba(60, 35, 49, 0.14);
   --serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
   --sans: var(--font-jost), system-ui, -apple-system, sans-serif;
+
+  /* Width of the desktop content container */
+  --container: 1200px;
+}
+
+/* ============================================================
+   Tailwind v4 theme bridge — expose tokens to utilities so we
+   can write bg-ivory, text-plum, font-serif, etc. with full
+   responsive (md:, lg:) + state (hover:, focus-visible:) support.
+   ============================================================ */
+@theme inline {
+  --color-ivory: var(--ivory);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-ink: var(--ink);
+  --color-plum: var(--plum);
+  --color-plum-soft: var(--plum-soft);
+  --color-blush: var(--blush);
+  --color-blush-deep: var(--blush-deep);
+  --color-rose: var(--rose);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-text: var(--gold-text);
+
+  --font-serif: var(--serif);
+  --font-sans: var(--sans);
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--sans);
   background: var(--ivory);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 a { color: inherit; }
 
+/* ============================================================
+   Accessibility primitives
+   ============================================================ */
 :focus-visible {
   outline: 2px solid var(--rose);
   outline-offset: 2px;
@@ -47,6 +82,9 @@ a { color: inherit; }
 }
 .skip-link:focus { left: 8px; top: 8px; }
 
+/* ============================================================
+   Scroll-reveal motion (disabled under reduced-motion)
+   ============================================================ */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -55,10 +93,156 @@ a { color: inherit; }
 .reveal.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
   .reveal { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   Reusable design-system component classes
+   (kept here so markup stays readable; all reference tokens)
+   ============================================================ */
+
+/* Eyebrow / kicker label above headings */
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 0.6875rem;       /* 11px */
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+}
+
+/* Buttons -------------------------------------------------- */
+.btn {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 14px 26px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid transparent;
+  transition: background-color 0.25s ease, color 0.25s ease,
+              border-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+  line-height: 1;
+  min-height: 44px;           /* WCAG tap target */
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--plum);
+  color: var(--ivory);
+  border-color: var(--plum);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--rose);
+  border-color: var(--rose);
+  box-shadow: 0 8px 22px rgba(60, 35, 49, 0.18);
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--plum);
+  border-color: var(--gold);
+}
+.btn-gold:hover:not(:disabled) {
+  background: var(--gold-soft);
+  border-color: var(--gold-soft);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--plum);
+  border-color: var(--gold);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--plum);
+  color: var(--ivory);
+  border-color: var(--plum);
+}
+
+/* Form controls -------------------------------------------- */
+.field-label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--plum-soft);
+  margin-bottom: 8px;
+}
+
+.field-input,
+.field-select,
+.field-textarea {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 13px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 48px;
+}
+.field-textarea { min-height: 110px; resize: vertical; }
+.field-input::placeholder,
+.field-textarea::placeholder { color: rgba(60, 35, 49, 0.4); }
+
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--rose);
+  box-shadow: 0 0 0 3px rgba(185, 126, 120, 0.16);
+}
+
+.field-error {
+  color: #9b2c2c;
+  font-size: 0.78rem;
+  margin-top: 6px;
+  font-family: var(--sans);
+}
+.field-input[aria-invalid="true"],
+.field-select[aria-invalid="true"],
+.field-textarea[aria-invalid="true"] {
+  border-color: #9b2c2c;
+}
+
+/* Cards ---------------------------------------------------- */
+.surface-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+/* Section heading pairing (eyebrow + serif title) */
+.section-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  color: var(--plum);
+  line-height: 1.04;
+}
+
+/* Hide content visually but keep it for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

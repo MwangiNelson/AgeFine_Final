@@ -1,19 +1,11 @@
-"use client";
-
-import { useEffect } from "react";
-import { useCart } from "@/lib/cart-context";
 import Link from "next/link";
-import Header from "@/components/Header";
-import BottomNav from "@/components/BottomNav";
-import ProductRailCard from "@/components/ProductRailCard";
+import SiteShell from "@/components/SiteShell";
+import Reveal from "@/components/Reveal";
+import ProductGridCard from "@/components/ProductGridCard";
 import ProcedureItem from "@/components/ProcedureItem";
+import { supabase } from "@/lib/supabaseClient";
 
-const PRODUCTS = [
-  { id: "1", name: "Vitamin C glow serum", price: 2400, tag: "New", gradient: "linear-gradient(150deg,#F0E2D6,#E3C7BE)" },
-  { id: "2", name: "Hydra-repair moisturiser", price: 1950, gradient: "linear-gradient(150deg,#ECE7DD,#D9C4A8)" },
-  { id: "3", name: "Rose clay clarifying mask", price: 1500, tag: "Bestseller", gradient: "linear-gradient(150deg,#F3E0DE,#D7A9A2)" },
-  { id: "4", name: "Gentle renewal cleanser", price: 1200, gradient: "linear-gradient(150deg,#E7E9E2,#C9C2AE)" },
-];
+export const dynamic = "force-dynamic";
 
 const PROCEDURES = [
   { name: "HydraFacial", description: "Deep cleanse & hydrate · 45 min" },
@@ -21,117 +13,142 @@ const PROCEDURES = [
   { name: "Microneedling", description: "Texture & firmness · 60 min" },
 ];
 
-const eyebrow: React.CSSProperties = {
-  fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase",
-  color: "var(--gold-text)", marginBottom: 18, fontFamily: "var(--sans)",
-};
-const btnBase: React.CSSProperties = {
-  fontFamily: "var(--sans)", fontSize: 12.5, letterSpacing: "0.12em",
-  textTransform: "uppercase", fontWeight: 400, padding: "14px 22px",
-  borderRadius: 2, cursor: "pointer", textDecoration: "none", display: "inline-block",
-};
-const sectionTitle: React.CSSProperties = {
-  fontFamily: "var(--serif)", fontWeight: 500, fontSize: 30, color: "var(--plum)", lineHeight: 1,
-};
-const eyebrowSmall: React.CSSProperties = {
-  display: "block", fontFamily: "var(--sans)", fontSize: 10, letterSpacing: "0.3em",
-  textTransform: "uppercase", color: "var(--rose)", marginBottom: 8, fontWeight: 400,
-};
+const PROMISES = ["Cruelty free", "Dermatologist led", "Nairobi clinic"];
 
-export default function Home() {
-  const { addItem } = useCart();
+export default async function Home() {
+  const { data: products } = await supabase
+    .from("products")
+    .select("*")
+    .eq("active", true)
+    .order("created_at", { ascending: false })
+    .limit(4);
 
-  useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in"); }),
-      { threshold: 0.12 }
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
+  const bestsellers = products ?? [];
 
   return (
-    <>
-      <a href="#main" className="skip-link">Skip to content</a>
+    <SiteShell>
+      {/* ===== Hero ===== */}
+      <section
+        aria-labelledby="hero-h"
+        className="relative overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 82% 6%, rgba(216,189,140,.28), transparent 55%), linear-gradient(168deg, var(--ivory) 0%, var(--cream) 46%, var(--blush) 130%)",
+        }}
+      >
+        {/* Decorative rings */}
+        <div aria-hidden="true" className="pointer-events-none absolute rounded-full border opacity-70 w-[230px] h-[230px] md:w-[420px] md:h-[420px] -top-16 -right-20 md:top-10 md:-right-24" style={{ borderColor: "var(--gold-soft)" }} />
+        <div aria-hidden="true" className="pointer-events-none absolute rounded-full w-[150px] h-[150px] md:w-[230px] md:h-[230px] top-8 right-5 md:top-28 md:right-24" style={{ background: "radial-gradient(circle at 35% 30%, #fff, var(--blush) 70%, var(--blush-deep))" }} />
 
-      <div style={{ background: "var(--plum)", color: "var(--gold-soft)", fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center", padding: "8px 12px", fontFamily: "var(--sans)" }}>
-        Complimentary delivery within Nairobi · Dermatologist-led care
-      </div>
-
-      <Header />
-
-      <main id="main" style={{ paddingBottom: 80 }}>
-        <section aria-labelledby="hero-h" style={{ position: "relative", padding: "54px 26px 60px", overflow: "hidden", background: "radial-gradient(120% 80% at 78% 8%, rgba(216,189,140,.30), transparent 55%), linear-gradient(168deg, var(--ivory) 0%, var(--cream) 46%, var(--blush) 118%)" }}>
-          <div aria-hidden="true" style={{ position: "absolute", width: 230, height: 230, borderRadius: "50%", border: "1px solid var(--gold-soft)", top: -60, right: -70, opacity: 0.7 }} />
-          <div aria-hidden="true" style={{ position: "absolute", width: 150, height: 150, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%, #fff, var(--blush) 70%, var(--blush-deep))", top: 34, right: 18 }} />
-          <p style={eyebrow}>Skin · beauty · confidence</p>
-          <h1 id="hero-h" style={{ fontFamily: "var(--serif)", fontWeight: 500, fontSize: 50, lineHeight: 1.02, color: "var(--plum)", letterSpacing: "0.5px", maxWidth: "8ch" }}>
-            Radiance, <span style={{ fontStyle: "italic", color: "var(--rose)" }}>refined.</span>
-          </h1>
-          <p style={{ fontWeight: 300, fontSize: 14.5, lineHeight: 1.7, color: "var(--plum-soft)", margin: "18px 0 28px", maxWidth: "30ch", fontFamily: "var(--sans)" }}>
-            Clinically considered skincare and expert procedures, crafted for your natural glow.
-          </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Link href="/shop" style={{ ...btnBase, background: "var(--plum)", color: "var(--ivory)", border: "1px solid var(--plum)" }}>Shop the collection</Link>
-            <Link href="/services" style={{ ...btnBase, background: "transparent", color: "var(--plum)", border: "1px solid var(--gold)" }}>Book a procedure</Link>
+        <div className="mx-auto px-6 md:px-8 py-14 md:py-28 grid grid-cols-1 md:grid-cols-2 items-center gap-12" style={{ maxWidth: "var(--container)" }}>
+          <div className="relative z-10">
+            <p className="eyebrow mb-4 md:mb-6">Skin · beauty · confidence</p>
+            <h1 id="hero-h" className="font-serif font-medium text-plum leading-[1.02] tracking-[0.5px] text-[clamp(2.9rem,7vw,4.6rem)] max-w-[10ch]">
+              Radiance, <span className="italic text-rose">refined.</span>
+            </h1>
+            <p className="font-sans font-light text-plum-soft leading-[1.7] text-[15px] md:text-base mt-5 md:mt-7 mb-7 md:mb-9 max-w-[40ch]">
+              Clinically considered skincare and expert procedures, crafted for your
+              natural glow — shop online or book a treatment at our Nairobi clinic.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/shop" className="btn btn-primary">Shop the collection</Link>
+              <Link href="/services" className="btn btn-outline">Book a procedure</Link>
+            </div>
           </div>
-        </section>
 
-        <section aria-label="Why Agefine" style={{ display: "flex", justifyContent: "space-around", gap: 8, padding: "18px 16px", background: "var(--ivory)", borderBottom: "0.5px solid var(--line)" }}>
-          {["Cruelty free", "Dermatologist led", "Nairobi clinic"].map((t) => (
-            <div key={t} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, color: "var(--plum-soft)", fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", textAlign: "center", fontFamily: "var(--sans)" }}>
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.3"><path d="M12 21s-7-4.6-9-9a5 5 0 019-3 5 5 0 019 3c-2 4.4-9 9-9 9z" /></svg>
+          {/* Desktop hero visual */}
+          <div aria-hidden="true" className="relative hidden md:block h-[440px]">
+            <div className="absolute inset-0 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(150deg,#F3E0DE,#D7A9A2)", boxShadow: "0 30px 70px rgba(60,35,49,0.18)" }}>
+              <span className="absolute inset-0 flex items-center justify-center font-serif italic text-[rgba(60,35,49,0.32)] text-lg">
+                campaign imagery
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Promise strip ===== */}
+      <section aria-label="Why Agefine" className="bg-ivory border-b" style={{ borderColor: "var(--line)" }}>
+        <div className="mx-auto px-6 md:px-8 py-5 md:py-7 flex justify-around md:justify-center md:gap-20" style={{ maxWidth: "var(--container)" }}>
+          {PROMISES.map((t) => (
+            <div key={t} className="flex flex-col md:flex-row items-center gap-1.5 md:gap-3 text-plum-soft text-[9.5px] md:text-[11px] tracking-[0.14em] uppercase text-center font-sans">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.3">
+                <path d="M12 21s-7-4.6-9-9a5 5 0 019-3 5 5 0 019 3c-2 4.4-9 9-9 9z" />
+              </svg>
               {t}
             </div>
           ))}
-        </section>
-
-        <section className="reveal" aria-labelledby="bestsellers-h" style={{ padding: "40px 22px 12px" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 20 }}>
-            <h2 id="bestsellers-h" style={sectionTitle}><span style={eyebrowSmall}>Loved by clients</span>Bestsellers</h2>
-            <Link href="/shop" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gold-text)", textDecoration: "none", borderBottom: "1px solid var(--gold-soft)", paddingBottom: 2, whiteSpace: "nowrap", fontFamily: "var(--sans)" }}>View all</Link>
-          </div>
-        </section>
-        <div className="reveal" style={{ display: "flex", gap: 14, overflowX: "auto", padding: "4px 22px 8px" }}>
-          {PRODUCTS.map((p) => <ProductRailCard key={p.id} product={p} onAdd={() => addItem({ id: p.id, slug: p.id, name: p.name, price_kes: p.price, qty: 1 })} />)}
         </div>
+      </section>
 
-        <section className="reveal" aria-labelledby="procedures-h" style={{ padding: "40px 22px 4px" }}>
-          <h2 id="procedures-h" style={{ ...sectionTitle, marginBottom: 12 }}><span style={eyebrowSmall}>In-clinic</span>Signature procedures</h2>
-          {PROCEDURES.map((proc) => <ProcedureItem key={proc.name} procedure={proc} />)}
-        </section>
+      {/* ===== Bestsellers ===== */}
+      <section aria-labelledby="bestsellers-h" className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-4" style={{ maxWidth: "var(--container)" }}>
+        <Reveal className="flex items-end justify-between mb-7 md:mb-10">
+          <h2 id="bestsellers-h" className="section-title text-[30px] md:text-[42px]">
+            <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>Loved by clients</span>
+            Bestsellers
+          </h2>
+          <Link href="/shop" className="font-sans text-[11px] md:text-xs tracking-[0.12em] uppercase text-gold-text no-underline whitespace-nowrap border-b pb-0.5 hover:text-plum transition-colors" style={{ borderColor: "var(--gold-soft)" }}>
+            View all
+          </Link>
+        </Reveal>
 
-        <section className="reveal" aria-label="Founder note" style={{ marginTop: 44, background: "var(--sand)", padding: "44px 26px", textAlign: "center" }}>
-          <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 26, lineHeight: 1.32, color: "var(--plum)" }}>
+        {bestsellers.length > 0 ? (
+          <Reveal className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-7 md:gap-y-12">
+            {bestsellers.map((p, i) => (
+              <ProductGridCard key={p.id} product={p} index={i} />
+            ))}
+          </Reveal>
+        ) : (
+          <p className="font-sans text-plum-soft text-sm py-6">
+            Our collection is being prepared. Check back soon.
+          </p>
+        )}
+      </section>
+
+      {/* ===== Signature procedures ===== */}
+      <section aria-labelledby="procedures-h" className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-4" style={{ maxWidth: "var(--container)" }}>
+        <Reveal>
+          <h2 id="procedures-h" className="section-title text-[30px] md:text-[42px] mb-7 md:mb-10">
+            <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>In-clinic</span>
+            Signature procedures
+          </h2>
+        </Reveal>
+        <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6">
+          {PROCEDURES.map((proc) => (
+            <ProcedureItem key={proc.name} procedure={proc} />
+          ))}
+        </Reveal>
+      </section>
+
+      {/* ===== Founder quote ===== */}
+      <Reveal as="section" aria-label="Founder note" className="bg-sand mt-16 md:mt-24">
+        <div className="mx-auto px-6 md:px-8 py-16 md:py-28 text-center" style={{ maxWidth: "760px" }}>
+          <p className="font-serif italic text-plum leading-[1.32] text-[26px] md:text-[40px]">
             &ldquo;Beauty that begins with healthy, cared-for skin.&rdquo;
           </p>
-          <p style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--rose)", marginTop: 18, fontFamily: "var(--sans)" }}>— Mama Mungwana, founder</p>
-        </section>
+          <p className="eyebrow mt-6" style={{ color: "var(--rose)" }}>— Mama Mungwana, founder</p>
+        </div>
+      </Reveal>
 
-        <section className="reveal" aria-labelledby="booking-h" style={{ background: "var(--plum)", color: "var(--ivory)", padding: "48px 26px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-          <p style={{ ...eyebrow, color: "var(--gold-soft)" }}>Visit us</p>
-          <h2 id="booking-h" style={{ fontFamily: "var(--serif)", fontWeight: 500, fontSize: 34, lineHeight: 1.08, marginBottom: 14, color: "var(--ivory)" }}>Book your consultation</h2>
-          <p style={{ fontWeight: 300, fontSize: 13, lineHeight: 1.7, color: "#E9D9D2", maxWidth: "30ch", margin: "0 auto 26px", fontFamily: "var(--sans)" }}>Personalised skin assessments with our specialists. Walk in radiant.</p>
-          <a href="https://wa.me/" style={{ ...btnBase, background: "var(--gold)", color: "var(--plum)", border: "none", display: "inline-flex", alignItems: "center", gap: 9 }}>
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h9a4 4 0 014 4z" /></svg>
-            Chat on WhatsApp
-          </a>
-        </section>
-
-        <footer style={{ background: "var(--ivory)", padding: "30px 26px 40px" }}>
-          <p style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "0.16em", color: "var(--plum)", textAlign: "center", margin: 0 }}>AGEFINE</p>
-          <p style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--rose)", textAlign: "center", marginTop: 6 }}>cosmetics &amp; skin clinic</p>
-          <nav aria-label="Footer" style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 20 }}>
-            {[["Shop", "/shop"], ["Services", "/services"], ["About", "/about"], ["Contact", "/contact"]].map(([l, h]) => (
-              <Link key={l} href={h} style={{ color: "var(--plum-soft)", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>{l}</Link>
-            ))}
-          </nav>
-          <p style={{ textAlign: "center", fontSize: 10, color: "var(--plum-soft)", marginTop: 22, letterSpacing: "0.06em" }}>© 2026 Agefine Cosmetics · Nairobi, Kenya</p>
-        </footer>
-      </main>
-
-      <BottomNav />
-    </>
+      {/* ===== Booking CTA ===== */}
+      <Reveal as="section" aria-labelledby="booking-h" className="bg-plum text-ivory">
+        <div className="mx-auto px-6 md:px-8 py-16 md:py-28 text-center" style={{ maxWidth: "640px" }}>
+          <p className="eyebrow" style={{ color: "var(--gold-soft)" }}>Visit us</p>
+          <h2 id="booking-h" className="font-serif font-medium text-ivory leading-[1.08] text-[34px] md:text-[48px] mt-4 mb-4">
+            Book your consultation
+          </h2>
+          <p className="font-sans font-light text-[13px] md:text-[15px] leading-[1.7] max-w-[36ch] mx-auto mb-8" style={{ color: "#E9D9D2" }}>
+            Personalised skin assessments with our specialists. Walk in radiant.
+          </p>
+          <Link href="/services" className="btn btn-gold">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h9a4 4 0 014 4z" />
+            </svg>
+            Book a procedure
+          </Link>
+        </div>
+      </Reveal>
+    </SiteShell>
   );
 }

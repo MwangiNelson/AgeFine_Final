@@ -11,7 +11,18 @@
   `--gold` retained for borders and large/decorative use only.
 - Automated axe checks on the home page and components in the test suite.
 
+## Added in the responsive redesign + M4
+- Responsive nav: top nav on `md+`, a focus-trapped mobile drawer (Escape to close, focus restored
+  to the trigger, `aria-modal`, body scroll lock). `aria-current="page"` on the active link.
+- Tap targets: nav items, cart steppers, and add-to-bag buttons are now ≥44px (`.btn` enforces
+  `min-height:44px`; icon buttons use `w-11 h-11`).
+- Forms (`FormField.tsx`): every input has a `<label htmlFor>`, errors are wired via
+  `aria-describedby` + `aria-invalid` and announced with `role="alert"`; on submit, focus moves to
+  the first invalid field. Required fields marked. Submit buttons disable while pending.
+- Automated axe tests now also cover the cart page, the checkout form, and the booking form.
+
 ## Open items (final pass before launch — M6)
-- Verify tap target sizes (>=44px) on mobile nav and add buttons.
-- Manual keyboard + screen-reader walkthrough across all pages.
-- Re-run axe on shop, checkout, and admin pages as they are built.
+- Manual keyboard + screen-reader walkthrough across all pages (incl. the mobile drawer + checkout
+  confirmation flow).
+- Re-run axe on admin pages as they are built.
+- Confirm AA contrast on any new gold-on-ivory text introduced by the client's final palette.
