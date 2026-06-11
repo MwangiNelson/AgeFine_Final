@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./test/setup.ts"],
     include: ["test/**/*.test.{ts,tsx}"],
+    // axe-core scans of full responsive pages are CPU-heavy and can exceed the
+    // 5s default on slower machines / under parallel load.
+    testTimeout: 20000,
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, ".") },

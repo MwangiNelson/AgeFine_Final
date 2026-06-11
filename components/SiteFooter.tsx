@@ -79,9 +79,14 @@ export default function SiteFooter() {
           <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
             © 2026 Agefine Cosmetics · Nairobi, Kenya
           </p>
-          <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
-            Dermatologist-led care · Cruelty free
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
+              Dermatologist-led care · Cruelty free
+            </p>
+            <Link href="/admin" className="font-sans text-xs text-plum-soft tracking-[0.04em] no-underline hover:text-plum transition-colors">
+              Admin
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

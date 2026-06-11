@@ -18,14 +18,30 @@ app/            routes (App Router)
   services/     treatments + booking form (M4)
   contact/      enquiry form (M4)
   about/        brand story
+  admin/        protected dashboard (M5): login, overview, products, orders, bookings
+                + per-area actions.ts (Server Actions) + signout route
 components/      SiteShell, SiteHeader, BottomNav, SiteFooter, Reveal,
                 ProductGridCard, ShopGrid, ProcedureItem, AddToCartButton,
                 FormField, BookingFormCard
-lib/             supabaseClient.ts, cart.ts, cart-context.tsx, checkout.ts, database.types.ts
-supabase/migrations/  SQL schema (run in Supabase)
+  admin/         AdminShell, AdminNav, ProductRow, ProductForm, OrderCard, BookingCard
+lib/             supabaseClient.ts, cart.ts, cart-context.tsx, checkout.ts, admin.ts, database.types.ts
+  supabase/      client.ts (browser), server.ts (RSC/actions), middleware.ts (session+guard),
+                 admin-guard.ts (requireAdmin / isAdminUser)
+proxy.ts         Next 16 middleware (matcher /admin/:path*) — refreshes session + guards admin
+scripts/         create-admin.mjs (one-off admin user creation via service-role key)
+supabase/migrations/  SQL schema (run in Supabase): 0001 init, 0002 admin-role RLS
 test/            Vitest + Testing Library + jest-axe (helpers/ for shared render utils)
 docs/            this documentation
 ```
+
+## Admin auth & authorization (M5)
+Cookie-based Supabase Auth via `@supabase/ssr`. `proxy.ts` runs on `/admin/:path*`, refreshes the
+session, and redirects non-admins to `/admin/login`. Every admin server page also calls
+`requireAdmin()` (defense in depth), and the database enforces it a third time: the `admin_all_*`
+RLS policies and the storage write policies all gate on `public.is_admin()`, which reads
+`app_metadata.role = 'admin'` from the JWT. Admin = `role: 'admin'`, set on the user via the Auth
+Admin API (`scripts/create-admin.mjs`); there is no public sign-up. Mutations are Server Actions
+(`app/admin/**/actions.ts`) so writes happen server-side under the admin's session.
 
 ## Responsive design system
 Mobile-first, but a real desktop layout (not a stretched phone). One shell, `SiteShell`, wraps

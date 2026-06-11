@@ -27,8 +27,16 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   form), `/about`. Logic in `lib/checkout.ts` (pure: validators, `buildOrderPayload`,
   `buildWhatsAppLink`, `buildBookingPayload`) — validation mirrors the live RLS WITH CHECK clauses
   exactly (verified against the DB). Accessible forms via `components/FormField.tsx`.
-  **47 tests pass** (logic + cart/checkout/booking component tests, all axe-clean). typecheck, lint,
-  and `next build` all green.
+- **M5 Admin** — `/admin` area behind Supabase Auth (cookie sessions via `@supabase/ssr`).
+  Login at `/admin/login`; `proxy.ts` (Next 16 middleware) + `requireAdmin()` guard every admin
+  route. Access requires `app_metadata.role = 'admin'` (not just any authenticated user) — enforced
+  in the proxy, in server pages, AND in tightened RLS (`public.is_admin()`, migration `0002`).
+  Pages: Overview (counts), Products CRUD (create/edit via Server Actions, image upload to
+  `product-images`, active toggle, delete), Orders (status machine
+  pending_payment→paid→fulfilled/cancelled), Bookings inbox (new→contacted→confirmed→completed/
+  cancelled). Status machines + product validation are pure in `lib/admin.ts`.
+  **68 tests pass** (all of M4 + admin status/validation/guard tests, axe-clean). typecheck, lint,
+  and `next build` all green. Auth + RLS verified live (anon writes denied, admin allowed).
 
 ## Supabase
 - Project `AgeFine_Final`, project_id `skhjxnbxamafqknfgqcc`, region eu-west-2.
@@ -36,11 +44,22 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
 - Tables: `categories`, `products`, `orders`, `bookings` (+ RLS). Storage bucket `product-images`.
 - Types: `lib/database.types.ts` — regenerate via Supabase MCP `generate_typescript_types`
   after any schema change, and run `get_advisors(security)` after DDL.
-- Client: `lib/supabaseClient.ts` (anon, public reads). For admin (M5) add a server client
-  with cookies + Supabase Auth.
+- Clients: `lib/supabaseClient.ts` (anon, public reads on the storefront). Admin/auth use
+  `@supabase/ssr`: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server
+  components/actions, cookie session), `lib/supabase/middleware.ts` (session refresh + guard).
 - Env: see `.env.example`. Public reads need `NEXT_PUBLIC_SUPABASE_URL` +
   `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Checkout needs `NEXT_PUBLIC_TILL_NUMBER`,
-  `NEXT_PUBLIC_WHATSAPP`. Admin needs `SUPABASE_SERVICE_ROLE_KEY` (server only).
+  `NEXT_PUBLIC_WHATSAPP`. `SUPABASE_SERVICE_ROLE_KEY` is server-only — used solely by
+  `scripts/create-admin.mjs` to create/promote the admin user; it is NOT referenced by app code.
+
+## Admin access
+- Login: `/admin/login`. Account: `admin@agefine.co.ke` (temporary password set on creation —
+  change it after first login). The user has `app_metadata.role = 'admin'`.
+- To create/reset an admin: `node scripts/create-admin.mjs <email> <password>` (reads the
+  service-role key from `.env`; sets the admin role and confirms the email).
+- Access control is layered: `proxy.ts` (matcher `/admin/:path*`) + `requireAdmin()` in each
+  server page + RLS `public.is_admin()` (JWT `app_metadata.role = 'admin'`). All fail closed.
+- Sign-up is effectively closed (no public sign-up UI; only the script creates users).
 
 ## Remaining milestones
 ### M4 — Checkout + booking/contact forms ✅ DONE
@@ -51,9 +70,13 @@ checkout never trusts a client total — it derives `total_kes` from the cart. C
 M-Pesa Till + a `wa.me` deep link and clears the cart. The contact form reuses the booking insert
 with a fixed service of "General enquiry".
 
-### M5 — Admin dashboard (`/admin`)
-- Supabase Auth (email/password); protect `/admin` (middleware or server check). Create the
-  admin user in the Supabase Auth dashboard.
+### M5 — Admin dashboard (`/admin`) ✅ DONE
+Built per the spec below, with access tightened to require the `admin` role (not just any
+authenticated user). Status machines and product validation live in `lib/admin.ts` (pure, tested);
+mutations are Next Server Actions in `app/admin/**/actions.ts`, each calling `requireAdmin()` first.
+Image uploads go to the `product-images` bucket; the public URL is stored in `image_urls`.
+Order/booking status changes use optimistic concurrency (only update if status is unchanged).
+Original spec, for reference:
 - Products CRUD with image upload to `product-images` (store public URL in `image_urls`).
   Orders list + status transitions (pending_payment→paid→fulfilled/cancelled). Bookings inbox.
 - Admin writes allowed by RLS `admin_all_*` (auth.role()='authenticated').
