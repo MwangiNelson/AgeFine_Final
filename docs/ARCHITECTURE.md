@@ -71,3 +71,14 @@ Public can read active products/categories and insert orders/bookings; admin wri
 ## Payments
 Manual M-Pesa Buy Goods: checkout creates an order (`pending_payment`) and shows the Till
 number + WhatsApp link. Admin confirms payment manually. Till/WhatsApp come from env.
+
+## SEO & visibility (M6)
+`lib/site.ts` is the single source of truth for the canonical URL (`SITE_URL`, from
+`NEXT_PUBLIC_SITE_URL`) and all business details — swap its placeholders for real values and every
+metadata tag, structured-data block, footer link and contact detail updates at once. The root
+layout sets `metadataBase` + a title template + OpenGraph/Twitter/robots defaults; pages add their
+own title/description/canonical (and products add OG from the product). Generated routes:
+`app/sitemap.ts` (static routes + live product slugs), `app/robots.ts` (disallows `/admin`),
+`app/opengraph-image.tsx` (branded 1200×630 PNG via `next/og`), `app/manifest.ts`. Structured data
+is emitted by `components/JsonLd.tsx`: a site-wide `BeautySalon` (LocalBusiness) in the layout, and
+`Product` + `BreadcrumbList` on product pages.

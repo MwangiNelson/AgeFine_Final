@@ -2,9 +2,11 @@ import SiteShell from "@/components/SiteShell";
 import BookingFormCard from "@/components/BookingFormCard";
 
 export const metadata = {
-  title: "Services & Procedures — Agefine Cosmetics",
+  title: "Services & Procedures",
   description:
     "Expert in-clinic beauty procedures at Agefine Cosmetics, Nairobi. Book a HydraFacial, chemical peel, microneedling and more with our dermatologist-led team.",
+  alternates: { canonical: "/services" },
+  openGraph: { title: "Services & Procedures — Agefine Cosmetics", url: "/services" },
 };
 
 const SERVICES = [

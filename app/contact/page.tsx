@@ -1,10 +1,13 @@
 import SiteShell from "@/components/SiteShell";
 import BookingFormCard from "@/components/BookingFormCard";
+import { SITE, whatsappLink } from "@/lib/site";
 
 export const metadata = {
-  title: "Contact — Agefine Cosmetics",
+  title: "Contact",
   description:
     "Get in touch with Agefine Cosmetics, Nairobi. Visit our skin clinic, message us on WhatsApp, or send an enquiry and we'll respond shortly.",
+  alternates: { canonical: "/contact" },
+  openGraph: { title: "Contact — Agefine Cosmetics", url: "/contact" },
 };
 
 const DETAILS = [
@@ -15,7 +18,7 @@ const DETAILS = [
         <path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
       </svg>
     ),
-    lines: ["Nairobi, Kenya", "Mon–Sat · 9am–6pm"],
+    lines: [`${SITE.address.locality}, Kenya`, SITE.openingHoursHuman],
   },
   {
     label: "WhatsApp",
@@ -25,7 +28,17 @@ const DETAILS = [
       </svg>
     ),
     lines: ["Chat with our team", "Fastest response"],
-    href: "https://wa.me/",
+    href: whatsappLink(),
+  },
+  {
+    label: "Email",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+        <path d="M4 5h16v14H4z" /><path d="M4 7l8 6 8-6" />
+      </svg>
+    ),
+    lines: [SITE.email],
+    href: `mailto:${SITE.email}`,
   },
 ];
 

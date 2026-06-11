@@ -3,18 +3,30 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import SiteShell from "@/components/SiteShell";
 import AddToCartButton from "@/components/AddToCartButton";
+import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { supabase } from "@/lib/supabaseClient";
+import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const { data: product } = await supabase
-    .from("products").select("name, description").eq("slug", slug).eq("active", true).maybeSingle();
-  if (!product) return { title: "Product not found — Agefine Cosmetics" };
+    .from("products").select("name, description, image_urls, price_kes").eq("slug", slug).eq("active", true).maybeSingle();
+  if (!product) return { title: "Product not found" };
+  const desc = product.description ?? `${product.name} — KES ${product.price_kes.toLocaleString()} at ${SITE.name}, Nairobi.`;
+  const img = product.image_urls?.[0];
   return {
-    title: `${product.name} — Agefine Cosmetics`,
-    description: product.description ?? undefined,
+    title: product.name,
+    description: desc,
+    alternates: { canonical: `/shop/${slug}` },
+    openGraph: {
+      type: "website",
+      title: `${product.name} — ${SITE.name}`,
+      description: desc,
+      url: `/shop/${slug}`,
+      images: img ? [{ url: img, alt: product.name }] : undefined,
+    },
   };
 }
 
@@ -29,6 +41,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <SiteShell>
+      <ProductJsonLd
+        name={product.name}
+        description={product.description}
+        image={img}
+        priceKes={product.price_kes}
+        slug={product.slug}
+        inStock={inStock}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Shop", path: "/shop" },
+          { name: product.name, path: `/shop/${product.slug}` },
+        ]}
+      />
       <div className="mx-auto px-6 md:px-8 pt-6 md:pt-12" style={{ maxWidth: "var(--container)" }}>
         <Link href="/shop" className="font-sans text-[11px] tracking-[0.12em] uppercase text-gold-text no-underline hover:text-plum transition-colors">
           &larr; Back to shop

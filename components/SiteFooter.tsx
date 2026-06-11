@@ -1,4 +1,23 @@
 import Link from "next/link";
+import { SITE, whatsappLink } from "@/lib/site";
+
+const SOCIAL_ICONS: Record<string, React.ReactNode> = {
+  instagram: (
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="3.5" /><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+    </svg>
+  ),
+  facebook: (
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M14 8h2V5h-2a3 3 0 00-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8a1 1 0 011-1z" />
+    </svg>
+  ),
+  tiktok: (
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M15 4c.5 2.5 2 4 4.5 4.2M15 4v9.5a3.5 3.5 0 11-3.5-3.5" />
+    </svg>
+  ),
+};
 
 const COLUMNS = [
   {
@@ -59,16 +78,36 @@ export default function SiteFooter() {
           <div>
             <h2 className="eyebrow mb-4">Visit</h2>
             <address className="not-italic font-sans text-sm text-plum-soft leading-relaxed">
-              Nairobi, Kenya
+              {SITE.address.locality}, Kenya
               <br />
-              Mon–Sat · 9am–6pm
+              {SITE.openingHoursHuman}
             </address>
-            <a href="https://wa.me/" className="btn btn-outline mt-5 text-xs">
+            <a href={whatsappLink()} className="btn btn-outline mt-5 text-xs">
               <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h9a4 4 0 014 4z" />
               </svg>
               WhatsApp us
             </a>
+
+            {/* Social */}
+            <ul className="list-none p-0 mt-6 flex items-center gap-3">
+              {(Object.keys(SITE.social) as (keyof typeof SITE.social)[]).map((key) =>
+                SITE.social[key] ? (
+                  <li key={key}>
+                    <a
+                      href={SITE.social[key]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${SITE.name} on ${key}`}
+                      className="flex items-center justify-center w-10 h-10 rounded-full border text-plum-soft hover:text-plum hover:border-plum transition-colors"
+                      style={{ borderColor: "var(--line)" }}
+                    >
+                      {SOCIAL_ICONS[key]}
+                    </a>
+                  </li>
+                ) : null
+              )}
+            </ul>
           </div>
         </div>
 

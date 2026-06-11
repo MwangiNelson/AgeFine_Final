@@ -35,8 +35,16 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   `product-images`, active toggle, delete), Orders (status machine
   pending_payment→paid→fulfilled/cancelled), Bookings inbox (new→contacted→confirmed→completed/
   cancelled). Status machines + product validation are pure in `lib/admin.ts`.
-  **68 tests pass** (all of M4 + admin status/validation/guard tests, axe-clean). typecheck, lint,
-  and `next build` all green. Auth + RLS verified live (anon writes denied, admin allowed).
+- **M6 SEO + visibility + final a11y** — central config `lib/site.ts` (SITE_URL + all business
+  details, single source of truth). Root layout sets `metadataBase`, title template,
+  OpenGraph/Twitter defaults + robots. Per-route metadata + canonicals on all pages; product pages
+  add OG + canonical from the product. `app/sitemap.ts` (static + dynamic product slugs),
+  `app/robots.ts` (disallows /admin), `app/opengraph-image.tsx` (branded 1200×630 PNG, static),
+  `app/manifest.ts`. Structured data in `components/JsonLd.tsx`: site-wide `BeautySalon`
+  (LocalBusiness), `Product` + `BreadcrumbList` on product pages. Footer now has social icons +
+  real contact/WhatsApp wired from `lib/site.ts`. Customer-facing tap targets bumped to ≥44px.
+  **72 tests pass** (incl. axe on footer, admin login, booking forms). typecheck, lint, and
+  `next build` all green; sitemap/robots/og-image/JSON-LD verified rendering live.
 
 ## Supabase
 - Project `AgeFine_Final`, project_id `skhjxnbxamafqknfgqcc`, region eu-west-2.
@@ -82,11 +90,20 @@ Original spec, for reference:
 - Admin writes allowed by RLS `admin_all_*` (auth.role()='authenticated').
 - Tests: auth guard, CRUD logic, status-transition logic.
 
-### M6 — Services, SEO/visibility, final AA audit, docs
-- Services/procedures, About, Contact pages.
-- Per-route metadata + openGraph, `sitemap.ts`, `robots.ts`, JSON-LD (Product + LocalBusiness).
-- Google Business Profile + social links.
-- Full-site axe audit; tap targets >=44px; manual keyboard + screen-reader pass. Update docs.
+### M6 — Services, SEO/visibility, final AA audit, docs ✅ DONE
+Services/About/Contact shipped in M4; M6 added the SEO/visibility layer and the final a11y pass
+(see "Done so far"). Per-route metadata + canonicals, `sitemap.ts`/`robots.ts`, OG image, manifest,
+and JSON-LD (BeautySalon + Product + Breadcrumb) are all live and verified.
+
+**⚠ Placeholders to replace before launch** — all live in ONE file, `lib/site.ts`:
+- `SITE.address` (real street address), `SITE.phone`, `SITE.email`, `SITE.geo` (clinic lat/long),
+  `SITE.social` (real Instagram/Facebook/TikTok URLs — or remove unused ones).
+- Set `NEXT_PUBLIC_SITE_URL` in the environment to the real domain (e.g. https://agefine.co.ke),
+  and `NEXT_PUBLIC_WHATSAPP` / `NEXT_PUBLIC_TILL_NUMBER` for checkout.
+- **Google Business Profile**: create/claim it separately (not a code task); once live, add its URL
+  to `SITE.social` so it appears in the LocalBusiness `sameAs`.
+- Still recommended pre-launch: a manual keyboard + screen-reader walkthrough on a real device, and
+  real product photography to replace the gradient placeholders.
 
 ## Design fidelity
 Reference prototype `agefine-design/home-mobile.html` for the mobile language: serif headlines,

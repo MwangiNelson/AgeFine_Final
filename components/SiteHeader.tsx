@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
+import { whatsappLink } from "@/lib/site";
 
 const NAV_LINKS = [
   { label: "Shop", href: "/shop" },
@@ -190,7 +191,7 @@ export default function SiteHeader() {
               })}
             </nav>
             <div className="mt-auto px-6 py-6">
-              <a href="https://wa.me/" className="btn btn-gold w-full">Chat on WhatsApp</a>
+              <a href={whatsappLink()} className="btn btn-gold w-full">Chat on WhatsApp</a>
             </div>
           </div>
         </div>

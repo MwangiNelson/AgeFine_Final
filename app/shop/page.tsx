@@ -4,7 +4,12 @@ import { supabase } from "@/lib/supabaseClient";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Shop — Agefine Cosmetics" };
+export const metadata = {
+  title: "Shop",
+  description: "Shop dermatologist-led skincare — serums, moisturisers, cleansers, masks and sunscreen — crafted for your glow. Delivery within Nairobi.",
+  alternates: { canonical: "/shop" },
+  openGraph: { title: "Shop — Agefine Cosmetics", url: "/shop" },
+};
 
 export default async function ShopPage() {
   const [{ data: products }, { data: categories }] = await Promise.all([

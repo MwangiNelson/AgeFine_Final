@@ -2,9 +2,11 @@ import Link from "next/link";
 import SiteShell from "@/components/SiteShell";
 
 export const metadata = {
-  title: "About — Agefine Cosmetics",
+  title: "About",
   description:
     "Agefine Cosmetics is a dermatologist-led skin and beauty clinic in Nairobi, pairing clinically considered skincare with expert in-clinic procedures.",
+  alternates: { canonical: "/about" },
+  openGraph: { title: "About — Agefine Cosmetics", url: "/about" },
 };
 
 const VALUES = [
