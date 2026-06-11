@@ -96,6 +96,12 @@ describe("buildOrderPayload", () => {
     expect(buildOrderPayload(validForm, items).status).toBe("pending_payment");
   });
 
+  it("includes a client-supplied id so the insert needs no RETURNING/SELECT", () => {
+    expect(buildOrderPayload(validForm, items, "fixed-id-123").id).toBe("fixed-id-123");
+    // and auto-generates one when not provided
+    expect(typeof buildOrderPayload(validForm, items).id).toBe("string");
+  });
+
   it("normalizes the phone and trims the name", () => {
     const payload = buildOrderPayload(
       { ...validForm, customer_name: "  Asha  ", phone: "0712 345 678" },

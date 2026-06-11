@@ -4,10 +4,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/checkout" }));
 
-const singleMock = vi.fn(() => Promise.resolve({ data: { id: "abcd1234-0000-0000-0000-000000000000" }, error: null }));
+// The checkout inserts with a client-generated id and does NOT chain .select()
+// (anon has no select policy on orders), so insert resolves directly.
 const insertMock = vi.fn((payload: Record<string, unknown>) => {
   void payload;
-  return { select: () => ({ single: singleMock }) };
+  return Promise.resolve({ error: null });
 });
 vi.mock("@/lib/supabaseClient", () => ({
   supabase: { from: () => ({ insert: insertMock }) },
@@ -27,7 +28,6 @@ function renderCheckout(items: CartItem[]) {
 beforeEach(() => {
   window.localStorage.clear();
   insertMock.mockClear();
-  singleMock.mockClear();
 });
 
 describe("Checkout page", () => {
@@ -58,19 +58,25 @@ describe("Checkout page", () => {
 
     // Confirmation screen
     expect(await screen.findByText(/order received/i)).toBeInTheDocument();
-    expect(screen.getByText(/#abcd1234/i)).toBeInTheDocument();
     // payment amount shown
     expect(screen.getByText(/KES 2,400/)).toBeInTheDocument();
     // WhatsApp confirm link present
     const wa = screen.getByRole("link", { name: /confirm payment on whatsapp/i });
     expect(wa).toHaveAttribute("href", expect.stringContaining("https://wa.me/"));
 
-    // Order payload matches RLS contract
+    // Order payload matches RLS contract + carries a client-generated id
+    // (so the insert needs no RETURNING/SELECT).
     const payload = insertMock.mock.calls[0][0];
+    expect(typeof payload.id).toBe("string");
+    expect((payload.id as string).length).toBeGreaterThan(0);
     expect(payload.delivery_method).toBe("delivery");
     expect(Array.isArray(payload.items)).toBe(true);
     expect(payload.total_kes).toBe(2400);
     expect(payload.status).toBe("pending_payment");
+
+    // The confirmation shows the first 8 chars of that id.
+    const shortId = (payload.id as string).slice(0, 8);
+    expect(screen.getByText(new RegExp(`#${shortId}`, "i"))).toBeInTheDocument();
   });
 
   it("has no detectable accessibility violations on the form", async () => {

@@ -95,12 +95,17 @@ export function toOrderItems(items: CartItem[]): OrderLineItem[] {
  * Build the exact row to insert into `orders`. Trims/normalizes inputs and
  * derives the total from the cart (never trusts a client-passed total).
  * Optional fields that are empty are sent as null to match the schema.
+ *
+ * `id` is generated client-side and included so the insert does NOT need a
+ * RETURNING/SELECT (anon has insert-only access to `orders`, no select policy).
+ * We still get the order id for the confirmation screen + WhatsApp link.
  */
-export function buildOrderPayload(form: CheckoutForm, items: CartItem[]): OrderInsert {
+export function buildOrderPayload(form: CheckoutForm, items: CartItem[], id?: string): OrderInsert {
   const address = (form.address ?? "").trim();
   const notes = (form.notes ?? "").trim();
 
   return {
+    id: id ?? (typeof crypto !== "undefined" ? crypto.randomUUID() : undefined),
     customer_name: form.customer_name.trim(),
     phone: normalizePhone(form.phone),
     delivery_method: form.delivery_method,

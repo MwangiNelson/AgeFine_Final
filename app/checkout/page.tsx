@@ -60,17 +60,20 @@ export default function CheckoutPage() {
     }
 
     setSubmitting(true);
-    const payload = buildOrderPayload(form, items);
-    const { data, error } = await supabase.from("orders").insert(payload).select("id").single();
+    // Generate the id client-side so we don't need a RETURNING/SELECT on insert
+    // (anon has insert-only access to orders — no select policy by design).
+    const orderId = crypto.randomUUID();
+    const payload = buildOrderPayload(form, items, orderId);
+    const { error } = await supabase.from("orders").insert(payload);
     setSubmitting(false);
 
-    if (error || !data) {
+    if (error) {
       setSubmitError("We couldn't place your order. Please check your details and try again.");
       return;
     }
 
     setConfirmation({
-      orderId: data.id,
+      orderId,
       total,
       items: [...items],
       customerName: form.customer_name.trim(),
