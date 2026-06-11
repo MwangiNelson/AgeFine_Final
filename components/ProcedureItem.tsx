@@ -3,6 +3,7 @@ import Link from "next/link";
 interface Procedure {
   name: string;
   description: string;
+  image?: string;
   href?: string;
 }
 
@@ -15,7 +16,12 @@ export default function ProcedureItem({ procedure }: { procedure: Procedure }) {
       {/* Thumbnail */}
       <div
         className="flex-none w-16 h-16 rounded-full md:w-20 md:h-20"
-        style={{ background: "linear-gradient(150deg, var(--cream), var(--blush))" }}
+        style={{
+          background: procedure.image ? undefined : "linear-gradient(150deg, var(--cream), var(--blush))",
+          backgroundImage: procedure.image ? `url(${procedure.image})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
         aria-hidden="true"
       />
 

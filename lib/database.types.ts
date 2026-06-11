@@ -41,6 +41,20 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
         Relationships: [];
       };
+      services: {
+        Row: {
+          id: string; name: string; slug: string; description: string | null;
+          duration_min: number; price_kes: number | null; image_url: string | null;
+          sort_order: number; active: boolean; created_at: string;
+        };
+        Insert: {
+          id?: string; name: string; slug: string; description?: string | null;
+          duration_min?: number; price_kes?: number | null; image_url?: string | null;
+          sort_order?: number; active?: boolean; created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["services"]["Insert"]>;
+        Relationships: [];
+      };
       bookings: {
         Row: {
           id: string; name: string; phone: string; service: string;

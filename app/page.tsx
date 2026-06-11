@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 export const dynamic = "force-dynamic";
 
-const PROCEDURES = [
+const FALLBACK_PROCEDURES = [
   { name: "HydraFacial", description: "Deep cleanse & hydrate · 45 min" },
   { name: "Chemical peel", description: "Resurface & brighten · 30 min" },
   { name: "Microneedling", description: "Texture & firmness · 60 min" },
@@ -16,14 +16,30 @@ const PROCEDURES = [
 const PROMISES = ["Cruelty free", "Dermatologist led", "Nairobi clinic"];
 
 export default async function Home() {
-  const { data: products } = await supabase
-    .from("products")
-    .select("*")
-    .eq("active", true)
-    .order("created_at", { ascending: false })
-    .limit(4);
+  const [{ data: products }, { data: services }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(4),
+    supabase
+      .from("services")
+      .select("name, duration_min, price_kes, image_url")
+      .eq("active", true)
+      .order("sort_order", { ascending: true })
+      .limit(3),
+  ]);
 
   const bestsellers = products ?? [];
+  const procedures =
+    services && services.length > 0
+      ? services.map((s) => ({
+          name: s.name,
+          description: `${s.duration_min} min${s.price_kes != null ? ` · KES ${s.price_kes.toLocaleString()}` : ""}`,
+          image: s.image_url ?? undefined,
+        }))
+      : FALLBACK_PROCEDURES;
 
   return (
     <SiteShell>
@@ -115,7 +131,7 @@ export default async function Home() {
           </h2>
         </Reveal>
         <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6">
-          {PROCEDURES.map((proc) => (
+          {procedures.map((proc) => (
             <ProcedureItem key={proc.name} procedure={proc} />
           ))}
         </Reveal>
