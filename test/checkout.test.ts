@@ -200,3 +200,30 @@ describe("validateBooking / buildBookingPayload", () => {
     expect(payload.phone).toBe("0712345678");
   });
 });
+
+/* ---- additions: calendar slot on bookings ---- */
+
+describe("booking preferred_time", () => {
+  const base: BookingForm = { name: "Asha", phone: "0712345678", service: "Chemical Peels" };
+
+  it("accepts a valid HH:MM slot with a date", () => {
+    const form = { ...base, preferred_date: "2026-06-20", preferred_time: "14:00" };
+    expect(isBookingValid(validateBooking(form))).toBe(true);
+    expect(buildBookingPayload(form)).toMatchObject({ preferred_date: "2026-06-20", preferred_time: "14:00" });
+  });
+
+  it("rejects a malformed time", () => {
+    expect(validateBooking({ ...base, preferred_date: "2026-06-20", preferred_time: "2pm" }).preferred_time).toBeTruthy();
+  });
+
+  it("requires a date when a time is chosen", () => {
+    expect(validateBooking({ ...base, preferred_time: "14:00" }).preferred_date).toBeTruthy();
+  });
+
+  it("drops an orphan time (no date) from the payload and nulls empties", () => {
+    expect(buildBookingPayload({ ...base, preferred_time: "14:00" })).toMatchObject({
+      preferred_date: null,
+      preferred_time: null,
+    });
+  });
+});

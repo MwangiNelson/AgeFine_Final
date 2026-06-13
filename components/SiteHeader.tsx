@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { label: "Shop", href: "/shop" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -104,7 +105,7 @@ export default function SiteHeader() {
             AGEFINE
           </span>
           <span className="block font-sans text-[8.5px] md:text-[9px] tracking-[0.34em] uppercase text-rose mt-[3px]">
-            cosmetics &amp; skin clinic
+            beauty lab &amp; clinic
           </span>
         </Link>
 

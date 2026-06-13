@@ -45,11 +45,15 @@ export interface Database {
         Row: {
           id: string; name: string; slug: string; description: string | null;
           duration_min: number; price_kes: number | null; image_url: string | null;
+          category: string; tagline: string | null; benefits: string[];
+          gallery_urls: string[]; featured: boolean;
           sort_order: number; active: boolean; created_at: string;
         };
         Insert: {
           id?: string; name: string; slug: string; description?: string | null;
           duration_min?: number; price_kes?: number | null; image_url?: string | null;
+          category?: string; tagline?: string | null; benefits?: string[];
+          gallery_urls?: string[]; featured?: boolean;
           sort_order?: number; active?: boolean; created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["services"]["Insert"]>;
@@ -58,13 +62,27 @@ export interface Database {
       bookings: {
         Row: {
           id: string; name: string; phone: string; service: string;
-          preferred_date: string | null; message: string | null; status: string; created_at: string;
+          preferred_date: string | null; preferred_time: string | null;
+          message: string | null; status: string; created_at: string;
         };
         Insert: {
           id?: string; name: string; phone: string; service: string;
-          preferred_date?: string | null; message?: string | null; status?: string; created_at?: string;
+          preferred_date?: string | null; preferred_time?: string | null;
+          message?: string | null; status?: string; created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["bookings"]["Insert"]>;
+        Relationships: [];
+      };
+      applications: {
+        Row: {
+          id: string; name: string; phone: string; email: string | null;
+          interest: string; message: string | null; status: string; created_at: string;
+        };
+        Insert: {
+          id?: string; name: string; phone: string; email?: string | null;
+          interest?: string; message?: string | null; status?: string; created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["applications"]["Insert"]>;
         Relationships: [];
       };
     };

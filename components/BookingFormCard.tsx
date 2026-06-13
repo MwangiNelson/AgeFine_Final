@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { TextField, TextAreaField, SelectField } from "@/components/FormField";
+import BookingCalendar from "@/components/BookingCalendar";
+import { formatSlot } from "@/lib/booking";
 import { supabase } from "@/lib/supabaseClient";
 import {
   validateBooking,
@@ -35,6 +37,7 @@ export default function BookingFormCard({
     phone: "",
     service: fixedService ?? services[0] ?? "",
     preferred_date: "",
+    preferred_time: "",
     message: "",
   });
   const [errors, setErrors] = useState<BookingErrors>({});
@@ -77,6 +80,12 @@ export default function BookingFormCard({
         </div>
         <h3 className="font-serif text-plum text-2xl mb-2">Booking requested</h3>
         <p className="font-sans font-light text-plum-soft text-[15px] leading-relaxed">{successMessage}</p>
+        {form.preferred_date && (
+          <p className="font-sans text-plum text-sm mt-3 mb-0">
+            Requested: {form.preferred_date}
+            {form.preferred_time ? ` · ${formatSlot(form.preferred_time)}` : ""}
+          </p>
+        )}
       </div>
     );
   }
@@ -130,12 +139,15 @@ export default function BookingFormCard({
           </SelectField>
         )}
 
-        <TextField
-          label="Preferred date (optional)"
-          name="preferred_date"
-          type="date"
-          value={form.preferred_date}
-          onChange={(e) => update("preferred_date", e.target.value)}
+        <BookingCalendar
+          date={form.preferred_date ?? ""}
+          time={form.preferred_time ?? ""}
+          onSelectDate={(iso) => {
+            update("preferred_date", iso);
+            if (!iso) update("preferred_time", "");
+          }}
+          onSelectTime={(slot) => update("preferred_time", slot)}
+          error={errors.preferred_date ?? errors.preferred_time}
         />
 
         <TextAreaField

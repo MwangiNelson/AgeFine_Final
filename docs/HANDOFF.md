@@ -46,10 +46,48 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   **72 tests pass** (incl. axe on footer, admin login, booking forms). typecheck, lint, and
   `next build` all green; sitemap/robots/og-image/JSON-LD verified rendering live.
 
+- **M7 Real business content + experience upgrade** — replaced all placeholder content
+  with the client's real business data, captured from their live Instagram
+  (@agefine_beauty, via the picnob mirror — see `scripts/scrape-instagram.mjs` →
+  `scripts/ig-posts.json`, 180 posts).
+  - **Real identity in `lib/site.ts`**: Agefine Beauty Lab & Clinic · "Where Science
+    Speaks, Aesthetics Listens" · Imaara Mall, 2nd Floor, Mombasa Road, Nairobi ·
+    clinic 0746 285 020 / bookings + WhatsApp 0716 290 865 · real IG/FB URLs ·
+    maps helpers (`mapsSearchUrl/mapsDirectionsUrl/mapsEmbedUrl` resolve by place name).
+  - **Real service catalogue** (11 services, `scripts/seed-services.mjs`): chemical peels,
+    microneedling/microchanneling, LED therapy, HydraFacial, signature facials,
+    mesotherapy & skin boosters, IV nutrition, injectables/PRP, tightening & contouring,
+    bridal package, consultation — each with the client's own treatment photography
+    (curated from their posts, re-hosted in the `service-images` bucket; originals
+    committed under `scripts/ig-images/`). Prices left null ("priced on consultation")
+    for the client to fill in via admin.
+  - **Landing hero carousel** (`components/HeroCarousel.tsx`): featured procedures
+    full-bleed; auto-advance, swipe, dots/arrows, reduced-motion + SR-friendly.
+    Featured flag toggled per-service in admin.
+  - **Service detail pages** `/services/[slug]`: hero, benefits checklist, gallery
+    ("In the treatment room"), Service JSON-LD, booking form pre-selected.
+  - **Calendar booking**: `lib/booking.ts` (pure, tested) + `components/BookingCalendar.tsx`
+    — Mon–Sat, 60-day window, hourly slots from opening hours; saved to
+    `bookings.preferred_date/preferred_time`, shown in the admin booking cards.
+  - **Find-us**: `components/FindUs.tsx` (address, hours, phones, keyless Google-Maps
+    embed + directions deep link) on home + contact.
+  - **Careers page** `/careers`: training track (TVET-approved Agefine Aesthetics
+    Training) + join-the-team track; `applications` table (RLS-checked public insert),
+    `lib/careers.ts` validation, admin inbox at `/admin/applications` with status
+    machine new→reviewed→contacted→closed.
+  - **Admin services CRUD** `/admin/services`: hero + gallery uploads to
+    `service-images`, category/tagline/benefits editor, featured (carousel) and
+    active toggles; service validation pure in `lib/admin.ts`.
+  - Migrations `0004` (services content fields, bookings.preferred_time + tightened
+    insert policy, applications, service-images bucket, services admin policy parity)
+    and `0005` (revoke API EXECUTE on `rls_auto_enable`). **111 tests pass**;
+    typecheck/lint/build green; all routes smoke-tested 200.
+
 ## Supabase
 - Project `AgeFine_Final`, project_id `skhjxnbxamafqknfgqcc`, region eu-west-2.
 - URL `https://skhjxnbxamafqknfgqcc.supabase.co`.
-- Tables: `categories`, `products`, `orders`, `bookings` (+ RLS). Storage bucket `product-images`.
+- Tables: `categories`, `products`, `orders`, `bookings`, `services`, `applications`
+  (+ RLS). Storage buckets `product-images`, `service-images`.
 - Types: `lib/database.types.ts` — regenerate via Supabase MCP `generate_typescript_types`
   after any schema change, and run `get_advisors(security)` after DDL.
 - Clients: `lib/supabaseClient.ts` (anon, public reads on the storefront). Admin/auth use
@@ -95,15 +133,20 @@ Services/About/Contact shipped in M4; M6 added the SEO/visibility layer and the 
 (see "Done so far"). Per-route metadata + canonicals, `sitemap.ts`/`robots.ts`, OG image, manifest,
 and JSON-LD (BeautySalon + Product + Breadcrumb) are all live and verified.
 
-**⚠ Placeholders to replace before launch** — all live in ONE file, `lib/site.ts`:
-- `SITE.address` (real street address), `SITE.phone`, `SITE.email`, `SITE.geo` (clinic lat/long),
-  `SITE.social` (real Instagram/Facebook/TikTok URLs — or remove unused ones).
-- Set `NEXT_PUBLIC_SITE_URL` in the environment to the real domain (e.g. https://agefine.co.ke),
-  and `NEXT_PUBLIC_WHATSAPP` / `NEXT_PUBLIC_TILL_NUMBER` for checkout.
+**⚠ Remaining placeholders before launch** (most are now real — M7):
+- ~~address / phones / social~~ ✅ real (Imaara Mall 2nd Floor; 0746 285 020 / 0716 290 865;
+  live IG + FB). Still to confirm with the client: `SITE.email` (hello@ is assumed),
+  `SITE.geo` exact pin (currently approximate — directions links resolve by name so
+  customers are unaffected), `SITE.openingHours` (Mon–Sat 9–6 assumed), and TikTok.
+- Service **prices** are null ("priced on consultation") — client fills them in at
+  `/admin/services`.
+- Set `NEXT_PUBLIC_SITE_URL` to the real domain, and `NEXT_PUBLIC_WHATSAPP` /
+  `NEXT_PUBLIC_TILL_NUMBER` for checkout (WhatsApp default now 254716290865 in code).
 - **Google Business Profile**: create/claim it separately (not a code task); once live, add its URL
   to `SITE.social` so it appears in the LocalBusiness `sameAs`.
+- Supabase Auth: enable leaked-password protection (dashboard setting; advisor WARN).
 - Still recommended pre-launch: a manual keyboard + screen-reader walkthrough on a real device, and
-  real product photography to replace the gradient placeholders.
+  real product photography for the **shop** (services now use the client's own photos).
 
 ## Design fidelity
 Reference prototype `agefine-design/home-mobile.html` for the mobile language: serif headlines,

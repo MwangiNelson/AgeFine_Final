@@ -32,10 +32,11 @@ const COLUMNS = [
   {
     heading: "Clinic",
     links: [
-      { label: "Services", href: "/services" },
+      { label: "Treatments", href: "/services" },
       { label: "Book a consultation", href: "/services" },
       { label: "About us", href: "/about" },
-      { label: "Contact", href: "/contact" },
+      { label: "Careers & training", href: "/careers" },
+      { label: "Contact & directions", href: "/contact" },
     ],
   },
 ];
@@ -48,10 +49,10 @@ export default function SiteFooter() {
           {/* Brand */}
           <div>
             <p className="font-serif text-2xl tracking-[0.16em] text-plum m-0">AGEFINE</p>
-            <p className="eyebrow mt-1.5">cosmetics &amp; skin clinic</p>
+            <p className="eyebrow mt-1.5">beauty lab &amp; clinic</p>
             <p className="font-sans font-light text-sm leading-relaxed text-plum-soft mt-5 max-w-[34ch]">
-              Clinically considered skincare and expert beauty procedures, crafted for your
-              natural glow. Visit our Nairobi clinic.
+              {SITE.tagline}. Anti-ageing and aesthetic skin solutions by dermatology,
+              nutrition and cosmetic experts.
             </p>
           </div>
 
@@ -78,9 +79,15 @@ export default function SiteFooter() {
           <div>
             <h2 className="eyebrow mb-4">Visit</h2>
             <address className="not-italic font-sans text-sm text-plum-soft leading-relaxed">
+              {SITE.address.streetAddress}
+              <br />
               {SITE.address.locality}, Kenya
               <br />
               {SITE.openingHoursHuman}
+              <br />
+              <a href={`tel:${SITE.bookingPhone}`} className="no-underline hover:text-plum transition-colors">
+                {SITE.bookingPhone.replace("+254", "0")}
+              </a>
             </address>
             <a href={whatsappLink()} className="btn btn-outline mt-5 text-xs">
               <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -116,11 +123,11 @@ export default function SiteFooter() {
           style={{ borderColor: "var(--line)" }}
         >
           <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
-            © 2026 Agefine Cosmetics · Nairobi, Kenya
+            © 2026 {SITE.name} · Imaara Mall, Nairobi
           </p>
           <div className="flex items-center gap-4">
             <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
-              Dermatologist-led care · Cruelty free
+              {SITE.motto}
             </p>
             <Link href="/admin" className="font-sans text-xs text-plum-soft tracking-[0.04em] no-underline hover:text-plum transition-colors">
               Admin

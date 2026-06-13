@@ -8,6 +8,7 @@ import {
   type BookingStatus,
 } from "@/lib/admin";
 import { updateBookingStatus } from "@/app/admin/bookings/actions";
+import { formatSlot } from "@/lib/booking";
 
 type Booking = Database["public"]["Tables"]["bookings"]["Row"];
 
@@ -50,7 +51,12 @@ export default function BookingCard({ booking }: { booking: Booking }) {
       <div className="font-sans text-sm text-plum-soft flex flex-col gap-1 mb-3">
         <p className="text-plum">{booking.name}</p>
         <p><a href={`tel:${booking.phone}`} className="no-underline hover:text-plum transition-colors">{booking.phone}</a></p>
-        {booking.preferred_date && <p>Preferred: {new Date(booking.preferred_date).toLocaleDateString("en-KE", { dateStyle: "medium" })}</p>}
+        {booking.preferred_date && (
+          <p>
+            Preferred: {new Date(booking.preferred_date).toLocaleDateString("en-KE", { dateStyle: "medium" })}
+            {booking.preferred_time ? ` · ${formatSlot(booking.preferred_time)}` : ""}
+          </p>
+        )}
         {booking.message && <p className="italic mt-1">“{booking.message}”</p>}
       </div>
 

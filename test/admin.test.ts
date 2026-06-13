@@ -107,3 +107,89 @@ describe("buildProductPayload", () => {
     expect(p.category_id).toBeNull();
   });
 });
+
+/* ---- additions: applications + services (content expansion) ---- */
+
+import {
+  nextApplicationStatuses,
+  canTransitionApplication,
+  APPLICATION_STATUSES,
+  validateService,
+  isServiceValid,
+  buildServicePayload,
+  parseBenefits,
+} from "@/lib/admin";
+
+describe("application status transitions", () => {
+  it("allows new → reviewed | contacted | closed", () => {
+    expect(nextApplicationStatuses("new").sort()).toEqual(["closed", "contacted", "reviewed"]);
+  });
+
+  it("allows reviewed → contacted | closed and contacted → closed", () => {
+    expect(canTransitionApplication("reviewed", "contacted")).toBe(true);
+    expect(canTransitionApplication("contacted", "closed")).toBe(true);
+  });
+
+  it("forbids moving backwards and treats closed as terminal", () => {
+    expect(canTransitionApplication("contacted", "new")).toBe(false);
+    expect(nextApplicationStatuses("closed")).toEqual([]);
+  });
+
+  it("every status is part of the machine", () => {
+    APPLICATION_STATUSES.forEach((s) => expect(Array.isArray(nextApplicationStatuses(s))).toBe(true));
+  });
+});
+
+describe("validateService", () => {
+  const valid = { name: "Chemical Peels", duration_min: 45 };
+
+  it("passes a minimal valid service", () => {
+    expect(isServiceValid(validateService(valid))).toBe(true);
+  });
+
+  it("requires a name", () => {
+    expect(validateService({ ...valid, name: " " }).name).toBeTruthy();
+  });
+
+  it("requires a positive whole-number duration", () => {
+    expect(validateService({ ...valid, duration_min: "" }).duration_min).toBeTruthy();
+    expect(validateService({ ...valid, duration_min: 0 }).duration_min).toBeTruthy();
+    expect(validateService({ ...valid, duration_min: 12.5 }).duration_min).toBeTruthy();
+  });
+
+  it("allows a blank price (priced on consultation) but rejects negatives", () => {
+    expect(isServiceValid(validateService({ ...valid, price_kes: "" }))).toBe(true);
+    expect(validateService({ ...valid, price_kes: -1 }).price_kes).toBeTruthy();
+  });
+});
+
+describe("buildServicePayload", () => {
+  it("derives slug, parses benefits lines, and nulls a blank price", () => {
+    const payload = buildServicePayload({
+      name: "  LED Light Therapy ",
+      duration_min: "30",
+      price_kes: "",
+      benefits: "Calms acne\n\n  Boosts collagen  \n",
+      featured: true,
+    });
+    expect(payload.slug).toBe("led-light-therapy");
+    expect(payload.benefits).toEqual(["Calms acne", "Boosts collagen"]);
+    expect(payload.price_kes).toBeNull();
+    expect(payload.featured).toBe(true);
+    expect(payload.category).toBe("Treatments");
+  });
+
+  it("keeps an explicit slug and integer price", () => {
+    const payload = buildServicePayload({ name: "Peels", slug: "chemical-peels", duration_min: 45, price_kes: 4500 });
+    expect(payload.slug).toBe("chemical-peels");
+    expect(payload.price_kes).toBe(4500);
+  });
+});
+
+describe("parseBenefits", () => {
+  it("handles arrays, strings and undefined", () => {
+    expect(parseBenefits(undefined)).toEqual([]);
+    expect(parseBenefits(["a", " b "])).toEqual(["a", "b"]);
+    expect(parseBenefits("a\nb")).toEqual(["a", "b"]);
+  });
+});

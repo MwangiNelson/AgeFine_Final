@@ -1,8 +1,10 @@
 /* ============================================================
    Site-wide configuration: SEO + business details.
-   SINGLE SOURCE OF TRUTH — swap the PLACEHOLDER values below for
-   the client's real details and every metadata tag, structured-data
-   block, footer link and contact detail updates automatically.
+   SINGLE SOURCE OF TRUTH — every metadata tag, structured-data
+   block, footer link and contact detail reads from here.
+
+   Business details sourced from the client's live Instagram
+   profile (@agefine_beauty) and posts, June 2026.
    ============================================================ */
 
 /**
@@ -17,41 +19,48 @@ export const SITE_URL = (
 ).replace(/\/$/, "");
 
 export const SITE = {
-  name: "Agefine Cosmetics",
+  name: "Agefine Beauty Lab & Clinic",
   shortName: "Agefine",
-  legalName: "Agefine Cosmetics",
-  tagline: "Skin & Beauty Clinic, Nairobi",
+  legalName: "Agefine Beauty Lab & Clinic",
+  tagline: "Where Science Speaks, Aesthetics Listens",
+  motto: "Treat · Resolve · Maintain",
   description:
-    "Clinically considered skincare and expert beauty procedures, crafted for your natural glow. Shop online or book a procedure at our Nairobi clinic.",
+    "Anti-ageing and aesthetic skin solutions at Imaara Mall, Nairobi — chemical peels, microneedling, LED therapy, HydraFacials and more, led by dermatology, nutrition and cosmetic experts. Shop online or book a procedure.",
   locale: "en_KE",
   url: SITE_URL,
 
-  // ---- Business / contact (PLACEHOLDERS — replace with real details) ----
-  // International phone, no spaces, leading + for tel:/schema.
-  phone: "+254700000000",
-  // WhatsApp number, digits only, no + (international). Mirrors NEXT_PUBLIC_WHATSAPP.
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "254700000000",
+  // ---- Business / contact ----
+  // Main clinic line (from the Instagram bio).
+  phone: "+254746285020",
+  // Bookings / consultations line — also the WhatsApp number used across
+  // their posts ("Book your consultation Call/WhatsApp +254 716 290 865").
+  bookingPhone: "+254716290865",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "254716290865",
   email: "hello@agefine.co.ke",
   address: {
-    streetAddress: "PLACEHOLDER — street, building",
+    streetAddress: "Imaara Mall, 2nd Floor, Mombasa Road",
     locality: "Nairobi",
     region: "Nairobi",
     postalCode: "",
     country: "KE",
   },
-  // Approx clinic geo (Nairobi CBD) — replace with the real clinic coordinates.
-  geo: { latitude: -1.286389, longitude: 36.817223 },
+  /**
+   * Approximate clinic coordinates (Imaara Mall, Mombasa Road / Imara Daima).
+   * Used only for structured data; the customer-facing directions links
+   * resolve by place name, so they always land on the right pin.
+   */
+  geo: { latitude: -1.3266, longitude: 36.8682 },
   openingHours: [
     // Schema.org opening-hours specs.
     { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: "09:00", closes: "18:00" },
   ],
   openingHoursHuman: "Mon–Sat · 9am–6pm",
 
-  // ---- Social profiles (PLACEHOLDERS — replace or remove) ----
+  // ---- Social profiles ----
   social: {
-    instagram: "https://instagram.com/agefinecosmetics",
-    facebook: "https://facebook.com/agefinecosmetics",
-    tiktok: "https://tiktok.com/@agefinecosmetics",
+    instagram: "https://www.instagram.com/agefine_beauty/",
+    facebook: "https://www.facebook.com/agefinebeauty/",
+    tiktok: "",
   },
 } as const;
 
@@ -69,4 +78,23 @@ export function socialLinks(): string[] {
 /** Absolute URL for a path on the site. */
 export function absoluteUrl(path = "/"): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+/* ---- Maps / directions (resolve by place name — no API key needed) ---- */
+
+const MAPS_QUERY = "Agefine Beauty Lab & Clinic, Imaara Mall, Mombasa Road, Nairobi";
+
+/** Google Maps place search — opens the clinic pin. */
+export function mapsSearchUrl(): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAPS_QUERY)}`;
+}
+
+/** Google Maps turn-by-turn directions to the clinic. */
+export function mapsDirectionsUrl(): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAPS_QUERY)}`;
+}
+
+/** Keyless Google Maps embed for the find-us map. */
+export function mapsEmbedUrl(): string {
+  return `https://maps.google.com/maps?q=${encodeURIComponent("Imaara Mall, Mombasa Road, Nairobi")}&z=15&output=embed`;
 }

@@ -174,6 +174,8 @@ export interface BookingForm {
   phone: string;
   service: string;
   preferred_date?: string;
+  /** "HH:MM" 24h slot from the booking calendar (optional). */
+  preferred_time?: string;
   message?: string;
 }
 
@@ -195,6 +197,14 @@ export function validateBooking(form: BookingForm): BookingErrors {
   if (service.length < NAME_MIN) errors.service = "Please choose a service.";
   else if (service.length > NAME_MAX) errors.service = "Service name is too long.";
 
+  const time = (form.preferred_time ?? "").trim();
+  if (time && !/^\d{2}:\d{2}$/.test(time)) {
+    errors.preferred_time = "Pick a time from the available slots.";
+  }
+  if (time && !(form.preferred_date ?? "").trim()) {
+    errors.preferred_date = "Pick a date for your chosen time.";
+  }
+
   return errors;
 }
 
@@ -206,11 +216,13 @@ export function isBookingValid(errors: BookingErrors): boolean {
 export function buildBookingPayload(form: BookingForm) {
   const message = (form.message ?? "").trim();
   const preferred = (form.preferred_date ?? "").trim();
+  const time = (form.preferred_time ?? "").trim();
   return {
     name: form.name.trim(),
     phone: normalizePhone(form.phone),
     service: form.service.trim(),
     preferred_date: preferred || null,
+    preferred_time: preferred && time ? time : null,
     message: message || null,
     status: "new",
   };

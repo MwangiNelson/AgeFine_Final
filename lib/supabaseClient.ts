@@ -14,3 +14,5 @@ export type Category = Database["public"]["Tables"]["categories"]["Row"];
 export type Service = Database["public"]["Tables"]["services"]["Row"];
 export type OrderInsert = Database["public"]["Tables"]["orders"]["Insert"];
 export type BookingInsert = Database["public"]["Tables"]["bookings"]["Insert"];
+export type ApplicationRow = Database["public"]["Tables"]["applications"]["Row"];
+export type ApplicationInsert = Database["public"]["Tables"]["applications"]["Insert"];

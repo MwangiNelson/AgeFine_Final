@@ -1,13 +1,13 @@
 import SiteShell from "@/components/SiteShell";
 import BookingFormCard from "@/components/BookingFormCard";
-import { SITE, whatsappLink } from "@/lib/site";
+import { SITE, whatsappLink, mapsDirectionsUrl, mapsEmbedUrl } from "@/lib/site";
 
 export const metadata = {
-  title: "Contact",
+  title: "Contact & Directions",
   description:
-    "Get in touch with Agefine Cosmetics, Nairobi. Visit our skin clinic, message us on WhatsApp, or send an enquiry and we'll respond shortly.",
+    `Get in touch with ${SITE.name} — Imaara Mall, 2nd Floor, Mombasa Road, Nairobi. Call, WhatsApp, get directions, or send an enquiry and we'll respond shortly.`,
   alternates: { canonical: "/contact" },
-  openGraph: { title: "Contact — Agefine Cosmetics", url: "/contact" },
+  openGraph: { title: `Contact — ${SITE.shortName}`, url: "/contact" },
 };
 
 const DETAILS = [
@@ -18,7 +18,17 @@ const DETAILS = [
         <path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
       </svg>
     ),
-    lines: [`${SITE.address.locality}, Kenya`, SITE.openingHoursHuman],
+    lines: [SITE.address.streetAddress, `${SITE.address.locality}, Kenya`, SITE.openingHoursHuman],
+  },
+  {
+    label: "Call",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+        <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" />
+      </svg>
+    ),
+    lines: [SITE.phone.replace("+254", "0"), `Bookings: ${SITE.bookingPhone.replace("+254", "0")}`],
+    href: `tel:${SITE.bookingPhone}`,
   },
   {
     label: "WhatsApp",
@@ -86,9 +96,21 @@ export default function ContactPage() {
             })}
           </ul>
 
-          <div className="mt-8 rounded-xl overflow-hidden h-56 md:h-72 flex items-center justify-center" style={{ background: "linear-gradient(150deg, var(--cream), var(--blush))" }} aria-hidden="true">
-            <span className="font-serif italic text-[rgba(60,35,49,0.4)]">clinic location map</span>
+          <div className="mt-8 rounded-xl overflow-hidden border" style={{ borderColor: "var(--line)" }}>
+            <iframe
+              title={`Map showing ${SITE.name} at Imaara Mall, Mombasa Road, Nairobi`}
+              src={mapsEmbedUrl()}
+              className="w-full h-56 md:h-72 border-0 block"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
+          <a href={mapsDirectionsUrl()} target="_blank" rel="noopener noreferrer" className="btn btn-outline mt-4">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 21s-7-5.5-7-11a7 7 0 1114 0c0 5.5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
+            </svg>
+            Get directions to Imaara Mall
+          </a>
         </section>
 
         {/* Enquiry form */}
