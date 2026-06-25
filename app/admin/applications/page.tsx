@@ -1,6 +1,6 @@
 import AdminShell from "@/components/admin/AdminShell";
 import ApplicationCard from "@/components/admin/ApplicationCard";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 import { APPLICATION_STATUSES, type ApplicationStatus } from "@/lib/admin";
 
@@ -26,7 +26,7 @@ export default async function AdminApplicationsPage({
   const tabs = [{ id: "", label: "All" }, ...APPLICATION_STATUSES.map((s) => ({ id: s, label: s }))];
 
   return (
-    <AdminShell title="Applications" adminEmail={user.email}>
+    <AdminShell title="Applications" adminEmail={user.email} role={getRole(user)}>
       <nav aria-label="Filter applications" className="flex gap-2 overflow-x-auto mb-6">
         {tabs.map((t) => {
           const active = (filter ?? "") === t.id;

@@ -1,97 +1,183 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { TextField, TextAreaField } from "@/components/FormField";
+import RichTextEditor, { type RichTextEditorHandle } from "@/components/admin/RichTextEditor";
+import {
+  SERVICE_CATEGORIES,
+  DURATION_MIN_MINUTES,
+  DURATION_MAX_MINUTES,
+  DURATION_STEP_MINUTES,
+  formatDuration,
+} from "@/lib/admin";
+import { generateServiceContent } from "@/app/admin/services/ai";
 import type { Service } from "@/lib/supabaseClient";
 import type { ServiceActionState } from "@/app/admin/services/actions";
 
 type Action = (prev: ServiceActionState, formData: FormData) => Promise<ServiceActionState>;
 
+function CategoryIcon({ icon }: { icon: string }) {
+  const common = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.5, "aria-hidden": true } as const;
+  switch (icon) {
+    case "sparkle":
+      return <svg {...common}><path d="M12 3l1.8 4.9L18 9l-4.2 1.1L12 15l-1.8-4.9L6 9l4.2-1.1L12 3zM18 14l.9 2.2L21 17l-2.1.8L18 20l-.9-2.2L15 17l2.1-.8L18 14z" /></svg>;
+    case "syringe":
+      return <svg {...common}><path d="M18 2l4 4M17 7l-9 9-4 1 1-4 9-9zM14 5l5 5M9 12l3 3" /></svg>;
+    case "gem":
+      return <svg {...common}><path d="M6 3h12l3 6-9 12L3 9l3-6zM3 9h18M9 3L6 9l6 12 6-12-3-6" /></svg>;
+    case "chat":
+    default:
+      return <svg {...common}><path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h9a4 4 0 014 4z" /></svg>;
+  }
+}
+
 export default function ServiceForm({ action, service }: { action: Action; service?: Service }) {
   const [state, formAction, pending] = useActionState<ServiceActionState, FormData>(action, {});
-  const [hero, setHero] = useState<string>(service?.image_url ?? "");
-  const [gallery, setGallery] = useState<string[]>(service?.gallery_urls ?? []);
   const fieldErrors = state.fieldErrors ?? {};
 
+  const [category, setCategory] = useState(service?.category ?? SERVICE_CATEGORIES[0].value);
+  const [description, setDescription] = useState(service?.description ?? "");
+  const [duration, setDuration] = useState<number>(service?.duration_min ?? 60);
+  const [hero, setHero] = useState<string>(service?.image_url ?? "");
+  const [gallery, setGallery] = useState<string[]>(service?.gallery_urls ?? []);
+  const [name, setName] = useState(service?.name ?? "");
+
+  const editorRef = useRef<RichTextEditorHandle>(null);
+  const [aiPending, startAi] = useTransition();
+  const [aiError, setAiError] = useState<string>("");
+
+  function handleGenerate() {
+    setAiError("");
+    startAi(async () => {
+      const result = await generateServiceContent(name, category);
+      if (result.error) setAiError(result.error);
+      else if (result.html) editorRef.current?.setContent(result.html);
+    });
+  }
+
   return (
-    <form action={formAction} className="flex flex-col gap-6 max-w-[680px]">
+    <form action={formAction} className="flex flex-col gap-8 max-w-[760px]">
       {state.error && (
         <div role="alert" className="rounded-lg px-4 py-3 font-sans text-sm" style={{ background: "#FBEAEA", color: "#9b2c2c" }}>
           {state.error}
         </div>
       )}
 
-      <TextField label="Name" name="name" required defaultValue={service?.name ?? ""} error={fieldErrors.name} />
-
-      <TextField
-        label="Slug"
-        name="slug"
-        hint="URL path, e.g. chemical-peels. Leave blank to generate from the name."
-        defaultValue={service?.slug ?? ""}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <TextField
-          label="Category"
-          name="category"
-          hint="Groups the services page, e.g. Facials & Glow."
-          defaultValue={service?.category ?? "Treatments"}
-        />
-        <TextField
-          label="Tagline"
-          name="tagline"
-          hint="Short line shown on cards and the carousel."
-          defaultValue={service?.tagline ?? ""}
-        />
-      </div>
-
-      <TextAreaField label="Description" name="description" defaultValue={service?.description ?? ""} />
-
-      <TextAreaField
-        label="Benefits (one per line)"
-        name="benefits"
-        hint="Shown as the “What it helps with” checklist."
-        defaultValue={(service?.benefits ?? []).join("\n")}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <TextField
-          label="Duration (min)"
-          name="duration_min"
-          type="number"
-          required
-          inputMode="numeric"
-          min={5}
-          step={5}
-          defaultValue={service?.duration_min ?? 30}
-          error={fieldErrors.duration_min}
-        />
-        <TextField
-          label="Price (KES)"
-          name="price_kes"
-          type="number"
-          inputMode="numeric"
-          min={0}
-          step={1}
-          hint="Leave blank for “priced on consultation”."
-          defaultValue={service?.price_kes ?? ""}
-          error={fieldErrors.price_kes}
-        />
-        <TextField
-          label="Sort order"
-          name="sort_order"
-          type="number"
-          inputMode="numeric"
-          step={1}
-          defaultValue={service?.sort_order ?? 0}
-          error={fieldErrors.sort_order}
-        />
-      </div>
-
-      {/* Hero image */}
+      {/* Title (Google-Photos style) */}
       <div>
-        <span className="field-label">Hero image</span>
+        <input
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          placeholder="Untitled service"
+          aria-label="Service name"
+          aria-invalid={fieldErrors.name ? "true" : undefined}
+          className="w-full bg-transparent border-0 border-b font-serif text-plum text-3xl md:text-4xl leading-tight py-2 focus:outline-none focus:border-rose placeholder:text-plum-soft/40"
+          style={{ borderColor: fieldErrors.name ? "#9b2c2c" : "var(--line)" }}
+        />
+        {fieldErrors.name && <p className="field-error" role="alert">{fieldErrors.name}</p>}
+      </div>
+
+      {/* Category picker */}
+      <fieldset>
+        <legend className="field-label mb-3">Category</legend>
+        <input type="hidden" name="category" value={category} />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {SERVICE_CATEGORIES.map((c) => {
+            const selected = category === c.value;
+            return (
+              <button
+                key={c.value}
+                type="button"
+                onClick={() => setCategory(c.value)}
+                aria-pressed={selected}
+                className="flex flex-col items-center gap-2 px-3 py-4 rounded-xl border text-center transition-colors"
+                style={{
+                  borderColor: selected ? "var(--rose)" : "var(--line)",
+                  background: selected ? "#F8ECEA" : "#fff",
+                  color: selected ? "var(--rose)" : "var(--plum-soft)",
+                }}
+              >
+                <CategoryIcon icon={c.icon} />
+                <span className="font-sans text-xs leading-tight text-plum">{c.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* Description (rich text + AI) */}
+      <div>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <span className="field-label !mb-0">Description</span>
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={aiPending}
+            className="inline-flex items-center gap-1.5 font-sans text-xs px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50"
+            style={{ borderColor: "var(--gold-soft)", color: "var(--gold-text)" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M12 3l1.8 4.9L18 9l-4.2 1.1L12 15l-1.8-4.9L6 9l4.2-1.1L12 3z" /></svg>
+            {aiPending ? "Generating…" : "Generate with AI"}
+          </button>
+        </div>
+        {aiError && <p className="field-error mb-2" role="alert">{aiError}</p>}
+        <input type="hidden" name="description" value={description} />
+        <RichTextEditor ref={editorRef} value={description} onChange={setDescription} />
+        <p className="font-sans text-xs text-plum-soft mt-2">
+          Shown on the service page. The “Generate with AI” button drafts a description and benefits from the name &amp; category.
+        </p>
+      </div>
+
+      {/* Duration + price */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div>
+          <label htmlFor="duration" className="field-label">Duration</label>
+          <div className="flex items-center gap-4">
+            <input
+              id="duration"
+              name="duration_min"
+              type="range"
+              min={DURATION_MIN_MINUTES}
+              max={DURATION_MAX_MINUTES}
+              step={DURATION_STEP_MINUTES}
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="flex-1 accent-[var(--rose)]"
+            />
+            <span className="font-sans text-sm text-plum tabular-nums whitespace-nowrap min-w-[72px] text-right">
+              {formatDuration(duration)}
+            </span>
+          </div>
+          {fieldErrors.duration_min && <p className="field-error" role="alert">{fieldErrors.duration_min}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="price" className="field-label">Price</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 font-sans text-sm text-plum-soft pointer-events-none">KES</span>
+            <input
+              id="price"
+              name="price_kes"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              step={1}
+              defaultValue={service?.price_kes ?? ""}
+              placeholder="On consultation"
+              className="field-input !pl-12"
+              aria-invalid={fieldErrors.price_kes ? "true" : undefined}
+            />
+          </div>
+          {fieldErrors.price_kes && <p className="field-error" role="alert">{fieldErrors.price_kes}</p>}
+          <p className="font-sans text-xs text-plum-soft mt-2">Leave blank for “priced on consultation”.</p>
+        </div>
+      </div>
+
+      {/* Main image */}
+      <div>
+        <span className="field-label">Main image</span>
         {hero && (
           <div className="relative inline-block mb-3">
             <input type="hidden" name="existing_hero" value={hero} />
@@ -100,7 +186,7 @@ export default function ServiceForm({ action, service }: { action: Action; servi
             <button
               type="button"
               onClick={() => setHero("")}
-              aria-label="Remove hero image"
+              aria-label="Remove main image"
               className="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white flex items-center justify-center"
               style={{ background: "#9b2c2c" }}
             >
@@ -114,9 +200,7 @@ export default function ServiceForm({ action, service }: { action: Action; servi
           accept="image/*"
           className="block font-sans text-sm text-plum-soft file:mr-3 file:py-2 file:px-4 file:rounded-md file:border file:border-[var(--line)] file:bg-white file:font-sans file:text-sm file:text-plum file:cursor-pointer"
         />
-        <p className="font-sans text-xs text-plum-soft mt-2">
-          The main photo — used on the landing carousel, cards and the service page header.
-        </p>
+        <p className="font-sans text-xs text-plum-soft mt-2">The main photo — used on the landing carousel, cards and the service page header.</p>
       </div>
 
       {/* Gallery */}
@@ -149,29 +233,18 @@ export default function ServiceForm({ action, service }: { action: Action; servi
           multiple
           className="block font-sans text-sm text-plum-soft file:mr-3 file:py-2 file:px-4 file:rounded-md file:border file:border-[var(--line)] file:bg-white file:font-sans file:text-sm file:text-plum file:cursor-pointer"
         />
-        <p className="font-sans text-xs text-plum-soft mt-2">
-          “In the treatment room” photos shown on the service page — e.g. saved posts from
-          the clinic&rsquo;s Instagram.
-        </p>
+        <p className="font-sans text-xs text-plum-soft mt-2">“In the treatment room” photos shown on the service page.</p>
       </div>
 
-      {/* Flags */}
-      <div className="flex flex-col gap-3">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" name="featured" defaultChecked={service?.featured ?? false} className="w-4 h-4 accent-[var(--plum)]" />
-          <span className="font-sans text-sm text-plum">Featured (appears in the landing hero carousel)</span>
-        </label>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" name="active" defaultChecked={service?.active ?? true} className="w-4 h-4 accent-[var(--plum)]" />
-          <span className="font-sans text-sm text-plum">Active (visible on the site)</span>
-        </label>
-      </div>
-
-      <div className="flex items-center gap-3 pt-2">
-        <button type="submit" className="btn btn-primary" disabled={pending}>
-          {pending ? "Saving…" : service ? "Save changes" : "Create service"}
+      {/* CTAs */}
+      <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "var(--line)" }}>
+        <button type="submit" name="intent" value="publish" className="btn btn-primary mt-6" disabled={pending}>
+          {pending ? "Saving…" : "Publish"}
         </button>
-        <Link href="/admin/services" className="btn btn-outline">Cancel</Link>
+        <button type="submit" name="intent" value="draft" className="btn btn-outline mt-6" disabled={pending}>
+          Save as draft
+        </button>
+        <Link href="/admin/services" className="font-sans text-sm text-plum-soft hover:text-plum transition-colors no-underline mt-6 px-2">Cancel</Link>
       </div>
     </form>
   );

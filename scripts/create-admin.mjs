@@ -1,5 +1,6 @@
-// One-off: create (or promote) the admin user with app_metadata.role = 'admin'.
-// Usage: node scripts/create-admin.mjs <email> <password>
+// One-off: create (or promote) an admin user with app_metadata.role.
+// Usage: node scripts/create-admin.mjs <email> <password> [role]
+//   role: super_admin (default) | manager
 // Reads SUPABASE_URL + SERVICE_ROLE_KEY from .env. Service-role key is never
 // shipped to the browser; this runs locally only.
 import { readFileSync } from "node:fs";
@@ -17,10 +18,12 @@ function loadEnv(path) {
 const env = loadEnv(new URL("../.env", import.meta.url));
 const url = env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
-const [email, password] = process.argv.slice(2);
+const [email, password, roleArg] = process.argv.slice(2);
+const role = roleArg || "super_admin";
 
 if (!url || !serviceKey) throw new Error("Missing Supabase URL or service-role key in .env");
-if (!email || !password) throw new Error("Usage: node scripts/create-admin.mjs <email> <password>");
+if (!email || !password) throw new Error("Usage: node scripts/create-admin.mjs <email> <password> [super_admin|manager]");
+if (!["super_admin", "manager"].includes(role)) throw new Error(`Invalid role '${role}'. Use super_admin or manager.`);
 
 const supabase = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -34,18 +37,18 @@ const existing = list.users.find((u) => u.email?.toLowerCase() === email.toLower
 if (existing) {
   const { data, error } = await supabase.auth.admin.updateUserById(existing.id, {
     password,
-    app_metadata: { ...existing.app_metadata, role: "admin" },
+    app_metadata: { ...existing.app_metadata, role },
     email_confirm: true,
   });
   if (error) throw error;
-  console.log(`Updated existing admin user: ${data.user.email} (id ${data.user.id})`);
+  console.log(`Updated existing user: ${data.user.email} → role=${role} (id ${data.user.id})`);
 } else {
   const { data, error } = await supabase.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    app_metadata: { role: "admin" },
+    app_metadata: { role },
   });
   if (error) throw error;
-  console.log(`Created admin user: ${data.user.email} (id ${data.user.id})`);
+  console.log(`Created user: ${data.user.email} → role=${role} (id ${data.user.id})`);
 }

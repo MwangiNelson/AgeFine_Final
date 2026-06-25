@@ -28,8 +28,10 @@ function LoginForm() {
       return;
     }
 
-    // Only admins may proceed; sign others out immediately.
-    if (data.user.app_metadata?.role !== "admin") {
+    // Only staff may proceed; sign others out immediately.
+    const role = data.user.app_metadata?.role;
+    const isStaff = role === "admin" || role === "super_admin" || role === "manager";
+    if (!isStaff) {
       await supabase.auth.signOut();
       setSubmitting(false);
       setError("This account doesn't have admin access.");

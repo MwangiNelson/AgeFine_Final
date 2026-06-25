@@ -17,8 +17,20 @@ const STATUS_COLORS: Record<ApplicationStatus, { bg: string; fg: string }> = {
   closed: { bg: "#E6ECF2", fg: "#3a5a7b" },
 };
 
+/* Intent of each move: green progresses the applicant toward a hire/contact,
+   plum is a lateral review step, red closes the application out. */
+const TONE_CLASS: Record<ApplicationStatus, string> = {
+  new: "act-neutral",
+  reviewed: "act-neutral",
+  contacted: "act-ok-soft",
+  closed: "act-danger-soft",
+};
+
+const Spinner = () => <span className="act-spinner" aria-hidden="true" />;
+
 export default function ApplicationCard({ application }: { application: ApplicationRow }) {
   const [pending, startTransition] = useTransition();
+  const [busyTo, setBusyTo] = useState<ApplicationStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const status = application.status as ApplicationStatus;
   const transitions = nextApplicationStatuses(status);
@@ -28,14 +40,16 @@ export default function ApplicationCard({ application }: { application: Applicat
 
   function move(to: ApplicationStatus) {
     setError(null);
+    setBusyTo(to);
     startTransition(async () => {
       const res = await updateApplicationStatus(application.id, status, to);
       if (!res.ok) setError(res.error ?? "Update failed.");
+      setBusyTo(null);
     });
   }
 
   return (
-    <li className="surface-card p-5 md:p-6 flex flex-col" style={{ opacity: pending ? 0.6 : 1 }}>
+    <li className="surface-card p-5 md:p-6 flex flex-col" aria-busy={pending}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
           <h3 className="font-serif text-plum text-xl leading-tight">{interestLabel}</h3>
@@ -61,21 +75,22 @@ export default function ApplicationCard({ application }: { application: Applicat
         {transitions.length > 0 ? (
           <div className="flex flex-wrap gap-2 items-center">
             <span className="font-sans text-xs text-plum-soft mr-1">Mark as:</span>
-            {transitions.map((to) => (
-              <button
-                key={to}
-                type="button"
-                onClick={() => move(to)}
-                disabled={pending}
-                className="font-sans text-xs px-3.5 py-2 rounded-full border transition-colors"
-                style={{
-                  borderColor: to === "closed" ? "#d8b4b4" : "var(--plum)",
-                  color: to === "closed" ? "#9b2c2c" : "var(--plum)",
-                }}
-              >
-                {APPLICATION_STATUS_LABELS[to]}
-              </button>
-            ))}
+            {transitions.map((to) => {
+              const busy = busyTo === to;
+              return (
+                <button
+                  key={to}
+                  type="button"
+                  onClick={() => move(to)}
+                  disabled={pending}
+                  aria-busy={busy}
+                  className={`act act-sm ${TONE_CLASS[to] ?? "act-neutral"}`}
+                >
+                  {busy && <Spinner />}
+                  {APPLICATION_STATUS_LABELS[to]}
+                </button>
+              );
+            })}
           </div>
         ) : (
           <p className="font-sans text-xs text-plum-soft">

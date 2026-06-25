@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import ProductForm from "@/components/admin/ProductForm";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 import { updateProduct } from "../actions";
 
@@ -25,7 +25,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const action = updateProduct.bind(null, product.id);
 
   return (
-    <AdminShell title="Edit product" adminEmail={user.email}>
+    <AdminShell title="Edit product" adminEmail={user.email} role={getRole(user)}>
       <ProductForm action={action} categories={categories ?? []} product={product} />
     </AdminShell>
   );

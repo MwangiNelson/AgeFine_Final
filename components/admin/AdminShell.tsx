@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdminNav from "./AdminNav";
+import type { AdminRole } from "@/lib/supabase/admin-guard";
 
 /**
  * Admin chrome: a sidebar on desktop, a top bar on mobile. Used by each admin
@@ -8,11 +9,13 @@ import AdminNav from "./AdminNav";
 export default function AdminShell({
   title,
   adminEmail,
+  role,
   actions,
   children,
 }: {
   title: string;
   adminEmail?: string;
+  role?: AdminRole | null;
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -29,9 +32,13 @@ export default function AdminShell({
             <span className="block eyebrow mt-1">admin</span>
           </Link>
         </div>
-        <AdminNav />
+        <AdminNav role={role} />
         <form action="/admin/signout" method="post" className="px-5 py-4 mt-auto border-t hidden md:block" style={{ borderColor: "var(--line)" }}>
-          {adminEmail && <p className="font-sans text-xs text-plum-soft mb-2 truncate" title={adminEmail}>{adminEmail}</p>}
+          {adminEmail && (
+            <p className="font-sans text-xs text-plum-soft mb-2 truncate" title={adminEmail}>
+              {adminEmail}{role === "manager" && " · Management"}
+            </p>
+          )}
           <button type="submit" className="font-sans text-xs tracking-[0.1em] uppercase text-plum-soft hover:text-rose transition-colors">
             Sign out
           </button>

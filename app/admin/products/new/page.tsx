@@ -1,6 +1,6 @@
 import AdminShell from "@/components/admin/AdminShell";
 import ProductForm from "@/components/admin/ProductForm";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 import { createProduct } from "../actions";
 
@@ -14,7 +14,7 @@ export default async function NewProductPage() {
   const { data: categories } = await supabase.from("categories").select("*").order("name");
 
   return (
-    <AdminShell title="New product" adminEmail={user.email}>
+    <AdminShell title="New product" adminEmail={user.email} role={getRole(user)}>
       <ProductForm action={createProduct} categories={categories ?? []} />
     </AdminShell>
   );

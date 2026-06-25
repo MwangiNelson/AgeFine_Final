@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +30,7 @@ export default async function AdminOverviewPage() {
   ];
 
   return (
-    <AdminShell title="Overview" adminEmail={user.email}>
+    <AdminShell title="Overview" adminEmail={user.email} role={getRole(user)}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="surface-card p-6 no-underline hover:shadow-[0_14px_34px_rgba(60,35,49,0.08)] transition-shadow">

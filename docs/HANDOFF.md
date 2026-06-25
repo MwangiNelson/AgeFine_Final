@@ -99,13 +99,16 @@ approved design; mobile-first; WCAG 2.1 AA; every milestone ships with passing t
   `scripts/create-admin.mjs` to create/promote the admin user; it is NOT referenced by app code.
 
 ## Admin access
-- Login: `/admin/login`. Account: `admin@agefine.co.ke` (temporary password set on creation —
+- Login: `/admin/login`. Account: `
+` (temporary password set on creation —
   change it after first login). The user has `app_metadata.role = 'admin'`.
 - To create/reset an admin: `node scripts/create-admin.mjs <email> <password>` (reads the
   service-role key from `.env`; sets the admin role and confirms the email).
 - Access control is layered: `proxy.ts` (matcher `/admin/:path*`) + `requireAdmin()` in each
   server page + RLS `public.is_admin()` (JWT `app_metadata.role = 'admin'`). All fail closed.
 - Sign-up is effectively closed (no public sign-up UI; only the script creates users).
+
+
 
 ## Remaining milestones
 ### M4 — Checkout + booking/contact forms ✅ DONE

@@ -8,7 +8,8 @@ import type { Product, Category } from "@/lib/supabaseClient";
 function product(over: Partial<Product>): Product {
   return {
     id: "1", name: "Item", slug: "item", description: null, price_kes: 1000,
-    category_id: null, image_urls: [], stock: 5, active: true, created_at: "now", ...over,
+    category_id: null, image_urls: [], stock: 5, active: true,
+    sort_order: 0, featured: false, created_at: "now", ...over,
   };
 }
 

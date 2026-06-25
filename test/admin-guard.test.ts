@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { User } from "@supabase/supabase-js";
-import { isAdminUser } from "@/lib/supabase/admin-guard";
+import { isAdminUser, isSuperAdminUser, getRole } from "@/lib/supabase/admin-guard";
 
 function userWith(appMetadata: Record<string, unknown>): User {
   return {
@@ -12,17 +12,42 @@ function userWith(appMetadata: Record<string, unknown>): User {
   } as User;
 }
 
-describe("isAdminUser", () => {
-  it("is true only when app_metadata.role === 'admin'", () => {
-    expect(isAdminUser(userWith({ role: "admin" }))).toBe(true);
+describe("getRole", () => {
+  it("maps legacy 'admin' and 'super_admin' to super_admin", () => {
+    expect(getRole(userWith({ role: "admin" }))).toBe("super_admin");
+    expect(getRole(userWith({ role: "super_admin" }))).toBe("super_admin");
   });
+  it("maps 'manager' to manager", () => {
+    expect(getRole(userWith({ role: "manager" }))).toBe("manager");
+  });
+  it("is null for non-staff or unauthenticated", () => {
+    expect(getRole(userWith({ role: "editor" }))).toBeNull();
+    expect(getRole(userWith({}))).toBeNull();
+    expect(getRole(null)).toBeNull();
+  });
+});
 
-  it("is false for a non-admin role", () => {
+describe("isAdminUser", () => {
+  it("is true for any staff role (super-admin or manager)", () => {
+    expect(isAdminUser(userWith({ role: "admin" }))).toBe(true);
+    expect(isAdminUser(userWith({ role: "super_admin" }))).toBe(true);
+    expect(isAdminUser(userWith({ role: "manager" }))).toBe(true);
+  });
+  it("is false for a non-staff role or null user", () => {
     expect(isAdminUser(userWith({ role: "editor" }))).toBe(false);
     expect(isAdminUser(userWith({}))).toBe(false);
-  });
-
-  it("is false for a null user (unauthenticated)", () => {
     expect(isAdminUser(null)).toBe(false);
+  });
+});
+
+describe("isSuperAdminUser", () => {
+  it("is true only for super-admins", () => {
+    expect(isSuperAdminUser(userWith({ role: "admin" }))).toBe(true);
+    expect(isSuperAdminUser(userWith({ role: "super_admin" }))).toBe(true);
+  });
+  it("is false for managers and non-staff", () => {
+    expect(isSuperAdminUser(userWith({ role: "manager" }))).toBe(false);
+    expect(isSuperAdminUser(userWith({ role: "editor" }))).toBe(false);
+    expect(isSuperAdminUser(null)).toBe(false);
   });
 });

@@ -13,7 +13,7 @@ export const metadata = {
 
 export default async function ShopPage() {
   const [{ data: products }, { data: categories }] = await Promise.all([
-    supabase.from("products").select("*").eq("active", true).order("created_at", { ascending: false }),
+    supabase.from("products").select("*").eq("active", true).order("sort_order", { ascending: true }),
     supabase.from("categories").select("*").order("name"),
   ]);
 

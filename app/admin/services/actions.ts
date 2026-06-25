@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, requireSuperAdmin, isSuperAdminUser } from "@/lib/supabase/admin-guard";
 import { buildServicePayload, validateService, isServiceValid } from "@/lib/admin";
 
 export interface ServiceActionState {
@@ -40,14 +40,11 @@ function parseForm(formData: FormData) {
     name: String(formData.get("name") ?? ""),
     slug: String(formData.get("slug") ?? ""),
     category: String(formData.get("category") ?? ""),
-    tagline: String(formData.get("tagline") ?? ""),
     description: String(formData.get("description") ?? ""),
-    benefits: String(formData.get("benefits") ?? ""),
     duration_min: String(formData.get("duration_min") ?? ""),
     price_kes: String(formData.get("price_kes") ?? ""),
-    sort_order: String(formData.get("sort_order") ?? ""),
-    featured: formData.get("featured") === "on",
-    active: formData.get("active") === "on",
+    // The submit button carries the publish/draft intent.
+    active: String(formData.get("intent") ?? "draft") === "publish",
     existingHero: String(formData.get("existing_hero") ?? ""),
     newHero: formData.get("hero_image") instanceof File ? (formData.get("hero_image") as File) : null,
     existingGallery: formData.getAll("existing_gallery").map(String).filter(Boolean),
@@ -82,10 +79,19 @@ export async function createService(
     return { error: e instanceof Error ? e.message : "Image upload failed." };
   }
 
-  const payload = buildServicePayload({ ...input, ...images });
+  // New services land at the end of the (non-featured) list.
+  const { data: last } = await supabase
+    .from("services")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const sort_order = (last?.sort_order ?? 0) + 1;
+
+  const payload = { ...buildServicePayload({ ...input, ...images }), sort_order, featured: false };
   const { error } = await supabase.from("services").insert(payload);
   if (error) {
-    return { error: error.message.includes("duplicate") ? "A service with that slug already exists." : error.message };
+    return { error: error.message.includes("duplicate") ? "A service with that name already exists." : error.message };
   }
 
   revalidatePath("/admin/services");
@@ -113,10 +119,11 @@ export async function updateService(
     return { error: e instanceof Error ? e.message : "Image upload failed." };
   }
 
+  // buildServicePayload omits featured/sort_order so the board's ordering survives.
   const payload = buildServicePayload({ ...input, ...images });
   const { error } = await supabase.from("services").update(payload).eq("id", id);
   if (error) {
-    return { error: error.message.includes("duplicate") ? "A service with that slug already exists." : error.message };
+    return { error: error.message.includes("duplicate") ? "A service with that name already exists." : error.message };
   }
 
   revalidatePath("/admin/services");
@@ -126,27 +133,44 @@ export async function updateService(
   redirect("/admin/services");
 }
 
-/** Toggle a service's active (published) state. */
-export async function toggleServiceActive(id: string, active: boolean): Promise<void> {
-  await requireAdmin();
+export interface ServiceOrderUpdate {
+  id: string;
+  sort_order: number;
+  featured: boolean;
+}
+
+/**
+ * Persist a drag-and-drop reorder. Any staff may reorder within a section;
+ * changing the featured (homepage hero) set is super-admin only.
+ */
+export async function reorderServices(updates: ServiceOrderUpdate[]): Promise<{ error?: string }> {
+  const user = await requireAdmin();
   const supabase = await createClient();
-  await supabase.from("services").update({ active }).eq("id", id);
+
+  const { data: current } = await supabase.from("services").select("id, featured");
+  const featuredById = new Map((current ?? []).map((s) => [s.id, s.featured]));
+  const featuredChanged = updates.some((u) => featuredById.get(u.id) !== u.featured);
+
+  if (featuredChanged && !isSuperAdminUser(user)) {
+    return { error: "Only a super-admin can change the homepage featured services." };
+  }
+
+  const results = await Promise.all(
+    updates.map((u) =>
+      supabase.from("services").update({ sort_order: u.sort_order, featured: u.featured }).eq("id", u.id)
+    )
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message };
+
   revalidatePath("/admin/services");
   revalidatePath("/services");
   revalidatePath("/");
-}
-
-/** Toggle whether a service appears in the landing hero carousel. */
-export async function toggleServiceFeatured(id: string, featured: boolean): Promise<void> {
-  await requireAdmin();
-  const supabase = await createClient();
-  await supabase.from("services").update({ featured }).eq("id", id);
-  revalidatePath("/admin/services");
-  revalidatePath("/");
+  return {};
 }
 
 export async function deleteService(id: string): Promise<void> {
-  await requireAdmin();
+  await requireSuperAdmin();
   const supabase = await createClient();
   await supabase.from("services").delete().eq("id", id);
   revalidatePath("/admin/services");

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   nextOrderStatuses,
   canTransitionOrder,
+  isSensitiveTransition,
   nextBookingStatuses,
   canTransitionBooking,
   slugify,
@@ -26,16 +27,36 @@ describe("order status transitions", () => {
 
   it("forbids illegal jumps", () => {
     expect(canTransitionOrder("pending_payment", "fulfilled")).toBe(false);
-    expect(canTransitionOrder("paid", "pending_payment")).toBe(false);
+    expect(canTransitionOrder("pending_payment", "refunded")).toBe(false);
   });
 
-  it("treats fulfilled and cancelled as terminal", () => {
-    expect(nextOrderStatuses("fulfilled")).toEqual([]);
-    expect(nextOrderStatuses("cancelled")).toEqual([]);
+  it("allows reverts and refunds (now revertible)", () => {
+    expect(canTransitionOrder("fulfilled", "paid")).toBe(true);
+    expect(canTransitionOrder("paid", "pending_payment")).toBe(true);
+    expect(canTransitionOrder("paid", "refunded")).toBe(true);
+    expect(canTransitionOrder("cancelled", "pending_payment")).toBe(true);
+  });
+
+  it("still forbids nonsensical jumps", () => {
+    expect(canTransitionOrder("pending_payment", "fulfilled")).toBe(false);
+    expect(canTransitionOrder("cancelled", "fulfilled")).toBe(false);
   });
 
   it("every status is part of the machine", () => {
     ORDER_STATUSES.forEach((s) => expect(Array.isArray(nextOrderStatuses(s))).toBe(true));
+  });
+});
+
+describe("isSensitiveTransition", () => {
+  it("flags reverts and refunds as sensitive (super-admin only)", () => {
+    expect(isSensitiveTransition("fulfilled", "paid")).toBe(true);
+    expect(isSensitiveTransition("paid", "refunded")).toBe(true);
+    expect(isSensitiveTransition("cancelled", "pending_payment")).toBe(true);
+  });
+  it("treats forward moves as routine", () => {
+    expect(isSensitiveTransition("pending_payment", "paid")).toBe(false);
+    expect(isSensitiveTransition("paid", "fulfilled")).toBe(false);
+    expect(isSensitiveTransition("paid", "cancelled")).toBe(false);
   });
 });
 
@@ -117,7 +138,9 @@ import {
   validateService,
   isServiceValid,
   buildServicePayload,
-  parseBenefits,
+  excerpt,
+  stripHtml,
+  formatDuration,
 } from "@/lib/admin";
 
 describe("application status transitions", () => {
@@ -164,32 +187,51 @@ describe("validateService", () => {
 });
 
 describe("buildServicePayload", () => {
-  it("derives slug, parses benefits lines, and nulls a blank price", () => {
+  it("derives slug, defaults category/active, and nulls a blank price", () => {
     const payload = buildServicePayload({
       name: "  LED Light Therapy ",
       duration_min: "30",
       price_kes: "",
-      benefits: "Calms acne\n\n  Boosts collagen  \n",
-      featured: true,
     });
     expect(payload.slug).toBe("led-light-therapy");
-    expect(payload.benefits).toEqual(["Calms acne", "Boosts collagen"]);
     expect(payload.price_kes).toBeNull();
-    expect(payload.featured).toBe(true);
     expect(payload.category).toBe("Treatments");
+    expect(payload.active).toBe(true);
+    expect(payload.duration_min).toBe(30);
   });
 
-  it("keeps an explicit slug and integer price", () => {
-    const payload = buildServicePayload({ name: "Peels", slug: "chemical-peels", duration_min: 45, price_kes: 4500 });
+  it("keeps an explicit slug and integer price, and honours active=false (draft)", () => {
+    const payload = buildServicePayload({ name: "Peels", slug: "chemical-peels", duration_min: 45, price_kes: 4500, active: false });
     expect(payload.slug).toBe("chemical-peels");
     expect(payload.price_kes).toBe(4500);
+    expect(payload.active).toBe(false);
+  });
+
+  it("does not write board-managed featured/sort_order fields", () => {
+    const payload = buildServicePayload({ name: "X", duration_min: 30 });
+    expect(payload).not.toHaveProperty("featured");
+    expect(payload).not.toHaveProperty("sort_order");
   });
 });
 
-describe("parseBenefits", () => {
-  it("handles arrays, strings and undefined", () => {
-    expect(parseBenefits(undefined)).toEqual([]);
-    expect(parseBenefits(["a", " b "])).toEqual(["a", "b"]);
-    expect(parseBenefits("a\nb")).toEqual(["a", "b"]);
+describe("rich-text helpers", () => {
+  it("stripHtml removes tags and decodes common entities", () => {
+    expect(stripHtml("<p>Hello <strong>world</strong></p>")).toBe("Hello world");
+    expect(stripHtml("<p>A &amp; B</p>")).toBe("A & B");
+    expect(stripHtml(null)).toBe("");
+  });
+
+  it("excerpt truncates on a word boundary with an ellipsis", () => {
+    expect(excerpt("<p>Short text</p>")).toBe("Short text");
+    const long = "<p>" + "word ".repeat(50) + "</p>";
+    const out = excerpt(long, 20);
+    expect(out.length).toBeLessThanOrEqual(21);
+    expect(out.endsWith("…")).toBe(true);
+  });
+
+  it("formatDuration renders hours and minutes", () => {
+    expect(formatDuration(45)).toBe("45 m");
+    expect(formatDuration(90)).toBe("1 h 30 m");
+    expect(formatDuration(120)).toBe("2 h");
   });
 });

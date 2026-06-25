@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import ServiceForm from "@/components/admin/ServiceForm";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 import { updateService } from "../actions";
 
@@ -21,7 +21,7 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
   const action = updateService.bind(null, service.id);
 
   return (
-    <AdminShell title="Edit service" adminEmail={user.email}>
+    <AdminShell title="Edit service" adminEmail={user.email} role={getRole(user)}>
       <ServiceForm action={action} service={service} />
     </AdminShell>
   );

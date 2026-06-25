@@ -20,8 +20,21 @@ const STATUS_COLORS: Record<BookingStatus, { bg: string; fg: string }> = {
   cancelled: { bg: "#F3E6E6", fg: "#9b2c2c" },
 };
 
+/* Intent of each move, so the button reads its meaning at a glance:
+   green advances the booking, red cancels it, plum is a lateral touchpoint. */
+const TONE_CLASS: Record<BookingStatus, string> = {
+  new: "act-neutral",
+  contacted: "act-neutral",
+  confirmed: "act-ok-soft",
+  completed: "act-ok-soft",
+  cancelled: "act-danger-soft",
+};
+
+const Spinner = () => <span className="act-spinner" aria-hidden="true" />;
+
 export default function BookingCard({ booking }: { booking: Booking }) {
   const [pending, startTransition] = useTransition();
+  const [busyTo, setBusyTo] = useState<BookingStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const status = booking.status as BookingStatus;
   const transitions = nextBookingStatuses(status);
@@ -30,14 +43,16 @@ export default function BookingCard({ booking }: { booking: Booking }) {
 
   function move(to: BookingStatus) {
     setError(null);
+    setBusyTo(to);
     startTransition(async () => {
       const res = await updateBookingStatus(booking.id, status, to);
       if (!res.ok) setError(res.error ?? "Update failed.");
+      setBusyTo(null);
     });
   }
 
   return (
-    <li className="surface-card p-5 md:p-6 flex flex-col" style={{ opacity: pending ? 0.6 : 1 }}>
+    <li className="surface-card p-5 md:p-6 flex flex-col" aria-busy={pending}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
           <h3 className="font-serif text-plum text-xl leading-tight">{booking.service}</h3>
@@ -66,21 +81,22 @@ export default function BookingCard({ booking }: { booking: Booking }) {
         {transitions.length > 0 ? (
           <div className="flex flex-wrap gap-2 items-center">
             <span className="font-sans text-xs text-plum-soft mr-1">Mark as:</span>
-            {transitions.map((to) => (
-              <button
-                key={to}
-                type="button"
-                onClick={() => move(to)}
-                disabled={pending}
-                className="font-sans text-xs px-3.5 py-2 rounded-full border transition-colors"
-                style={{
-                  borderColor: to === "cancelled" ? "#d8b4b4" : "var(--plum)",
-                  color: to === "cancelled" ? "#9b2c2c" : "var(--plum)",
-                }}
-              >
-                {BOOKING_STATUS_LABELS[to]}
-              </button>
-            ))}
+            {transitions.map((to) => {
+              const busy = busyTo === to;
+              return (
+                <button
+                  key={to}
+                  type="button"
+                  onClick={() => move(to)}
+                  disabled={pending}
+                  aria-busy={busy}
+                  className={`act act-sm ${TONE_CLASS[to] ?? "act-neutral"}`}
+                >
+                  {busy && <Spinner />}
+                  {BOOKING_STATUS_LABELS[to]}
+                </button>
+              );
+            })}
           </div>
         ) : (
           <p className="font-sans text-xs text-plum-soft">

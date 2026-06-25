@@ -6,6 +6,7 @@ import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
 import FindUs from "@/components/FindUs";
 import { supabase } from "@/lib/supabaseClient";
 import { SITE } from "@/lib/site";
+import { excerpt } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -17,26 +18,38 @@ export default async function Home() {
       .from("products")
       .select("*")
       .eq("active", true)
-      .order("created_at", { ascending: false })
+      .eq("featured", true)
+      .order("sort_order", { ascending: true })
       .limit(4),
     supabase
       .from("services")
-      .select("slug, name, tagline, image_url")
+      .select("slug, name, description, image_url")
       .eq("active", true)
       .eq("featured", true)
       .order("sort_order", { ascending: true })
       .limit(5),
     supabase
       .from("services")
-      .select("slug, name, tagline, duration_min, price_kes, image_url, category")
+      .select("slug, name, duration_min, price_kes, image_url, category")
       .eq("active", true)
       .order("sort_order", { ascending: true }),
   ]);
 
-  const bestsellers = products ?? [];
+  // Prefer the admin-curated featured set; fall back to the newest products
+  // so the homepage is never empty before anything is featured.
+  let bestsellers = products ?? [];
+  if (bestsellers.length === 0) {
+    const { data: recent } = await supabase
+      .from("products")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(4);
+    bestsellers = recent ?? [];
+  }
   const slides: HeroSlide[] = (featured ?? [])
     .filter((s) => s.image_url)
-    .map((s) => ({ slug: s.slug, name: s.name, tagline: s.tagline, image: s.image_url! }));
+    .map((s) => ({ slug: s.slug, name: s.name, tagline: excerpt(s.description, 90) || null, image: s.image_url! }));
   const allServices = services ?? [];
   const treatments = allServices.filter((s) => !slides.some((f) => f.slug === s.slug)).slice(0, 6);
 

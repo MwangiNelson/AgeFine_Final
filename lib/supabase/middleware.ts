@@ -8,9 +8,9 @@ const anonKey =
   process.env.SUPABASE_PUBLISHABLE_KEY ??
   "";
 
-/** Returns true when the user has the admin role in app_metadata. */
+/** Returns true when the user carries any staff role in app_metadata. */
 function isAdmin(appMetadata: Record<string, unknown> | undefined): boolean {
-  return appMetadata?.role === "admin";
+  return appMetadata?.role === "admin" || appMetadata?.role === "super_admin" || appMetadata?.role === "manager";
 }
 
 /**
@@ -43,9 +43,13 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminArea = pathname.startsWith("/admin");
   const isLoginPage = pathname === "/admin/login";
+  // The invite-acceptance page is reached before a session cookie exists (the
+  // token arrives in the URL and is exchanged client-side), so it can't be
+  // gated on `admin` — treat it as public like the login page.
+  const isPublicAdminPath = isLoginPage || pathname === "/admin/accept-invite";
   const admin = user ? isAdmin(user.app_metadata) : false;
 
-  if (isAdminArea && !isLoginPage && !admin) {
+  if (isAdminArea && !isPublicAdminPath && !admin) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin/login";
     redirectUrl.searchParams.set("redirectedFrom", pathname);

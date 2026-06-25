@@ -1,6 +1,6 @@
 import AdminShell from "@/components/admin/AdminShell";
 import BookingCard from "@/components/admin/BookingCard";
-import { requireAdmin } from "@/lib/supabase/admin-guard";
+import { requireAdmin, getRole } from "@/lib/supabase/admin-guard";
 import { createClient } from "@/lib/supabase/server";
 import { BOOKING_STATUSES, type BookingStatus } from "@/lib/admin";
 
@@ -26,7 +26,7 @@ export default async function AdminBookingsPage({
   const tabs = [{ id: "", label: "All" }, ...BOOKING_STATUSES.map((s) => ({ id: s, label: s }))];
 
   return (
-    <AdminShell title="Bookings" adminEmail={user.email}>
+    <AdminShell title="Bookings" adminEmail={user.email} role={getRole(user)}>
       <nav aria-label="Filter bookings" className="flex gap-2 overflow-x-auto mb-6">
         {tabs.map((t) => {
           const active = (filter ?? "") === t.id;

@@ -4,22 +4,34 @@
 
 /* ---------- Orders ---------- */
 
-export const ORDER_STATUSES = ["pending_payment", "paid", "fulfilled", "cancelled"] as const;
+export const ORDER_STATUSES = ["pending_payment", "paid", "fulfilled", "cancelled", "refunded"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 /**
- * Allowed forward/again transitions for an order status.
- * - pending_payment → paid | cancelled
- * - paid           → fulfilled | cancelled
- * - fulfilled      → (terminal)
- * - cancelled      → (terminal)
+ * Allowed transitions for an order status. The graph is now revertible —
+ * forward moves are routine, while reverts and refunds are sensitive
+ * (see SENSITIVE_TRANSITIONS) and gated to super-admins in the action layer.
  */
 const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   pending_payment: ["paid", "cancelled"],
-  paid: ["fulfilled", "cancelled"],
-  fulfilled: [],
-  cancelled: [],
+  paid: ["fulfilled", "cancelled", "pending_payment", "refunded"],
+  fulfilled: ["paid", "refunded"],
+  cancelled: ["pending_payment"],
+  refunded: ["paid"],
 };
+
+/**
+ * Reverts (moving backward) and refunds. Allowed by the state machine but
+ * restricted to super-admins and require a note for the audit trail.
+ */
+const SENSITIVE_TRANSITIONS: ReadonlyArray<`${OrderStatus}->${OrderStatus}`> = [
+  "paid->pending_payment",
+  "fulfilled->paid",
+  "paid->refunded",
+  "fulfilled->refunded",
+  "refunded->paid",
+  "cancelled->pending_payment",
+];
 
 export function nextOrderStatuses(current: OrderStatus): OrderStatus[] {
   return ORDER_TRANSITIONS[current] ?? [];
@@ -29,11 +41,30 @@ export function canTransitionOrder(from: OrderStatus, to: OrderStatus): boolean 
   return nextOrderStatuses(from).includes(to);
 }
 
+/** True when a transition is a revert/refund — super-admin only, note required. */
+export function isSensitiveTransition(from: OrderStatus, to: OrderStatus): boolean {
+  return SENSITIVE_TRANSITIONS.includes(`${from}->${to}`);
+}
+
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   pending_payment: "Pending payment",
   paid: "Paid",
   fulfilled: "Fulfilled",
   cancelled: "Cancelled",
+  refunded: "Refunded",
+};
+
+/* ---------- Payments ---------- */
+
+export const PAYMENT_STATUSES = ["pending", "submitted", "settled", "failed", "refunded"] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  pending: "Pending",
+  submitted: "Submitted",
+  settled: "Settled",
+  failed: "Failed",
+  refunded: "Refunded",
 };
 
 /* ---------- Bookings ---------- */
@@ -158,25 +189,41 @@ export function buildProductPayload(input: ProductFormInput) {
 
 /* ---------- Services ---------- */
 
+/** Bookable categories, shown as an icon picker in the service editor. */
+export const SERVICE_CATEGORIES = [
+  { value: "Facials & Glow", label: "Facials & Glow", icon: "sparkle" },
+  { value: "Clinical Treatments", label: "Clinical Treatments", icon: "syringe" },
+  { value: "Advanced Aesthetics", label: "Advanced Aesthetics", icon: "gem" },
+  { value: "Consultation", label: "Consultation", icon: "chat" },
+] as const;
+
+/** Duration slider bounds (minutes). Services span a short, sensible range. */
+export const DURATION_MIN_MINUTES = 15;
+export const DURATION_MAX_MINUTES = 240;
+export const DURATION_STEP_MINUTES = 15;
+
+/** "1 h 30 m" / "45 m" — friendly label for the duration slider. */
+export function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return [h ? `${h} h` : null, m ? `${m} m` : null].filter(Boolean).join(" ") || "0 m";
+}
+
 export interface ServiceFormInput {
   name: string;
   slug?: string;
   category?: string;
-  tagline?: string;
+  /** Rich-text HTML from the editor. */
   description?: string;
-  /** One benefit per line in the form; arrays pass through unchanged. */
-  benefits?: string | string[];
   duration_min: number | string;
   /** Empty string = "priced on consultation" (stored as null). */
   price_kes?: number | string;
-  sort_order?: number | string;
-  featured?: boolean;
   active?: boolean;
   image_url?: string | null;
   gallery_urls?: string[];
 }
 
-export type ServiceErrors = Partial<Record<"name" | "duration_min" | "price_kes" | "sort_order", string>>;
+export type ServiceErrors = Partial<Record<"name" | "duration_min" | "price_kes", string>>;
 
 export function validateService(input: ServiceFormInput): ServiceErrors {
   const errors: ServiceErrors = {};
@@ -194,11 +241,6 @@ export function validateService(input: ServiceFormInput): ServiceErrors {
     else if (!Number.isInteger(price)) errors.price_kes = "Price must be a whole number (KES).";
   }
 
-  if (input.sort_order !== undefined && input.sort_order !== "") {
-    const sort = Number(input.sort_order);
-    if (Number.isNaN(sort) || !Number.isInteger(sort)) errors.sort_order = "Sort order must be a whole number.";
-  }
-
   return errors;
 }
 
@@ -206,29 +248,45 @@ export function isServiceValid(errors: ServiceErrors): boolean {
   return Object.keys(errors).length === 0;
 }
 
-/** Normalize a textarea of benefits (one per line) into a clean array. */
-export function parseBenefits(input: string | string[] | undefined): string[] {
-  if (input === undefined) return [];
-  const lines = Array.isArray(input) ? input : input.split("\n");
-  return lines.map((l) => l.trim()).filter(Boolean);
-}
-
-/** Build the DB row from validated form input (defaults applied, slug derived). */
+/**
+ * Build the DB row from validated form input (defaults applied, slug derived).
+ * `featured` and `sort_order` are intentionally omitted — they're managed by
+ * drag-and-drop on the services board, not the editor, so the editor must not
+ * clobber them on update.
+ */
 export function buildServicePayload(input: ServiceFormInput) {
   const name = input.name.trim();
   return {
     name,
     slug: (input.slug?.trim() || slugify(name)),
     category: input.category?.trim() || "Treatments",
-    tagline: input.tagline?.trim() || null,
     description: input.description?.trim() || null,
-    benefits: parseBenefits(input.benefits),
     duration_min: Number(input.duration_min),
     price_kes: input.price_kes === undefined || input.price_kes === "" ? null : Number(input.price_kes),
-    sort_order: input.sort_order === undefined || input.sort_order === "" ? 0 : Number(input.sort_order),
-    featured: input.featured ?? false,
     active: input.active ?? true,
     image_url: input.image_url || null,
     gallery_urls: input.gallery_urls ?? [],
   };
+}
+
+/** Strip HTML tags and collapse whitespace — plain text from rich content. */
+export function stripHtml(html: string | null | undefined): string {
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#39;|&rsquo;|&lsquo;/g, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;/g, '"')
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** A short plain-text preview from rich (or plain) description text. */
+export function excerpt(html: string | null | undefined, max = 140): string {
+  const text = stripHtml(html);
+  if (text.length <= max) return text;
+  return text.slice(0, max).replace(/\s+\S*$/, "").trimEnd() + "…";
 }

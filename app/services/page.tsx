@@ -3,6 +3,7 @@ import SiteShell from "@/components/SiteShell";
 import BookingFormCard from "@/components/BookingFormCard";
 import { supabase } from "@/lib/supabaseClient";
 import { SITE } from "@/lib/site";
+import { excerpt } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +17,10 @@ export const metadata = {
 
 // Shown if the services table hasn't been seeded yet.
 const FALLBACK_SERVICES = [
-  { id: "hydrafacial", slug: "", name: "HydraFacial", category: "Facials & Glow", tagline: null, duration_min: 45, price_kes: null, image_url: null, description: "A deep cleanse, exfoliation and intense hydration for an instant, lasting glow." },
-  { id: "chemical-peels", slug: "", name: "Chemical Peels", category: "Clinical Treatments", tagline: null, duration_min: 45, price_kes: null, image_url: null, description: "Resurface and brighten — targets dullness, uneven tone and fine texture." },
-  { id: "microneedling", slug: "", name: "Microneedling", category: "Clinical Treatments", tagline: null, duration_min: 60, price_kes: null, image_url: null, description: "Stimulates collagen to refine texture, scars and overall firmness." },
-  { id: "skin-consultation", slug: "", name: "Skin Consultation", category: "Consultation", tagline: null, duration_min: 30, price_kes: null, image_url: null, description: "A personalised assessment and treatment plan with our specialists." },
+  { id: "hydrafacial", slug: "", name: "HydraFacial", category: "Facials & Glow", duration_min: 45, price_kes: null, image_url: null, description: "A deep cleanse, exfoliation and intense hydration for an instant, lasting glow." },
+  { id: "chemical-peels", slug: "", name: "Chemical Peels", category: "Clinical Treatments", duration_min: 45, price_kes: null, image_url: null, description: "Resurface and brighten — targets dullness, uneven tone and fine texture." },
+  { id: "microneedling", slug: "", name: "Microneedling", category: "Clinical Treatments", duration_min: 60, price_kes: null, image_url: null, description: "Stimulates collagen to refine texture, scars and overall firmness." },
+  { id: "skin-consultation", slug: "", name: "Skin Consultation", category: "Consultation", duration_min: 30, price_kes: null, image_url: null, description: "A personalised assessment and treatment plan with our specialists." },
 ];
 
 /** Render categories in a deliberate order; anything new lands at the end. */
@@ -28,7 +29,7 @@ const CATEGORY_ORDER = ["Facials & Glow", "Clinical Treatments", "Advanced Aesth
 export default async function ServicesPage() {
   const { data } = await supabase
     .from("services")
-    .select("id, slug, name, category, tagline, description, duration_min, price_kes, image_url")
+    .select("id, slug, name, category, description, duration_min, price_kes, image_url")
     .eq("active", true)
     .order("sort_order", { ascending: true });
 
@@ -83,10 +84,7 @@ export default async function ServicesPage() {
                             <h3 className="font-serif text-plum text-xl md:text-2xl leading-tight m-0">{s.name}</h3>
                             <span className="font-sans text-[11px] tracking-[0.1em] uppercase text-gold-text whitespace-nowrap">{s.duration_min} min</span>
                           </div>
-                          {s.tagline && (
-                            <p className="font-sans text-[12px] tracking-[0.06em] uppercase m-0 mb-2" style={{ color: "var(--rose)" }}>{s.tagline}</p>
-                          )}
-                          <p className="font-sans font-light text-plum-soft text-sm leading-relaxed flex-1 m-0">{s.description}</p>
+                          <p className="font-sans font-light text-plum-soft text-sm leading-relaxed flex-1 m-0">{excerpt(s.description)}</p>
                           <p className="font-sans text-plum tracking-[0.05em] text-[13px] mt-4 mb-0 flex items-center justify-between">
                             <span>{s.price_kes != null ? `KES ${s.price_kes.toLocaleString()}` : "Priced on consultation"}</span>
                             {s.slug && (

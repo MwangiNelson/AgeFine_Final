@@ -6,6 +6,7 @@ import AddToCartButton from "@/components/AddToCartButton";
 import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { supabase } from "@/lib/supabaseClient";
 import { SITE } from "@/lib/site";
+import { stripHtml, excerpt } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { data: product } = await supabase
     .from("products").select("name, description, image_urls, price_kes").eq("slug", slug).eq("active", true).maybeSingle();
   if (!product) return { title: "Product not found" };
-  const desc = product.description ?? `${product.name} — KES ${product.price_kes.toLocaleString()} at ${SITE.name}, Nairobi.`;
+  const desc = excerpt(product.description, 200) || `${product.name} — KES ${product.price_kes.toLocaleString()} at ${SITE.name}, Nairobi.`;
   const img = product.image_urls?.[0];
   return {
     title: product.name,
@@ -43,7 +44,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     <SiteShell>
       <ProductJsonLd
         name={product.name}
-        description={product.description}
+        description={stripHtml(product.description) || null}
         image={img}
         priceKes={product.price_kes}
         slug={product.slug}
@@ -93,9 +94,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </p>
 
           {product.description && (
-            <p className="font-sans font-light text-ink leading-[1.75] text-[15px] md:text-base mb-8 max-w-[52ch]">
-              {product.description}
-            </p>
+            <div
+              className="prose-rich text-[15px] md:text-base leading-[1.75] mb-8 max-w-[52ch]"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
           )}
 
           <AddToCartButton

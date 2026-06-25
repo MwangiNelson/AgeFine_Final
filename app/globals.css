@@ -18,6 +18,16 @@
   --gold-soft: #D8BD8C;
   --gold-text: #7E6130;
   --line: rgba(60, 35, 49, 0.14);
+
+  /* Semantic action colours — constructive / destructive.
+     Reuse the brand-harmonised greens & reds already used by status pills. */
+  --ok: #3F6B3A;
+  --ok-hover: #345A30;
+  --ok-tint: #E8F0E6;
+  --danger: #9B2C2C;
+  --danger-hover: #842525;
+  --danger-tint: #F3E6E6;
+
   --serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
   --sans: var(--font-jost), system-ui, -apple-system, sans-serif;
 
@@ -137,7 +147,6 @@ a { color: inherit; }
   line-height: 1;
   min-height: 44px;           /* WCAG tap target */
 }
-.btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-primary {
@@ -148,7 +157,8 @@ a { color: inherit; }
 .btn-primary:hover:not(:disabled) {
   background: var(--rose);
   border-color: var(--rose);
-  box-shadow: 0 8px 22px rgba(60, 35, 49, 0.18);
+  box-shadow: 0 10px 24px rgba(60, 35, 49, 0.20);
+  transform: translateY(-1px);
 }
 
 .btn-gold {
@@ -159,6 +169,8 @@ a { color: inherit; }
 .btn-gold:hover:not(:disabled) {
   background: var(--gold-soft);
   border-color: var(--gold-soft);
+  box-shadow: 0 10px 24px rgba(184, 148, 90, 0.28);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
@@ -170,7 +182,82 @@ a { color: inherit; }
   background: var(--plum);
   color: var(--ivory);
   border-color: var(--plum);
+  box-shadow: 0 10px 24px rgba(60, 35, 49, 0.18);
+  transform: translateY(-1px);
 }
+
+/* Press feedback — after variants so the click moment always wins over hover */
+.btn:active:not(:disabled) { transform: translateY(1px); box-shadow: none; transition-duration: 0.04s; }
+
+/* Action buttons — compact, colour-coded for ops screens ---- */
+/* Constructive = .act-ok (green), destructive = .act-danger (red),
+   sideways/reopen = .act-neutral (plum outline), dismiss = .act-ghost. */
+.act {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  min-height: 38px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease,
+              border-color 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
+}
+.act:disabled { opacity: 0.55; cursor: not-allowed; }
+.act svg { width: 15px; height: 15px; flex: none; }
+
+/* Solid tones — for the single highest-intent action on a card */
+.act-ok { background: var(--ok); color: #fff; }
+.act-ok:hover:not(:disabled) { background: var(--ok-hover); box-shadow: 0 6px 16px rgba(63, 107, 58, 0.30); transform: translateY(-1px); }
+
+.act-danger { background: var(--danger); color: #fff; }
+.act-danger:hover:not(:disabled) { background: var(--danger-hover); box-shadow: 0 6px 16px rgba(155, 44, 44, 0.28); transform: translateY(-1px); }
+
+/* Soft tints — for a row of intent-coded choices; fill to full colour on hover */
+.act-ok-soft { background: var(--ok-tint); color: var(--ok-hover); }
+.act-ok-soft:hover:not(:disabled) { background: var(--ok); color: #fff; box-shadow: 0 6px 16px rgba(63, 107, 58, 0.26); transform: translateY(-1px); }
+
+.act-danger-soft { background: var(--danger-tint); color: var(--danger); }
+.act-danger-soft:hover:not(:disabled) { background: var(--danger); color: #fff; box-shadow: 0 6px 16px rgba(155, 44, 44, 0.24); transform: translateY(-1px); }
+
+.act-neutral { background: #fff; color: var(--plum); border-color: var(--line); }
+.act-neutral:hover:not(:disabled) { border-color: var(--plum); background: var(--cream); box-shadow: 0 5px 14px rgba(60, 35, 49, 0.12); transform: translateY(-1px); }
+
+.act-ghost { background: transparent; color: var(--plum-soft); }
+.act-ghost:hover:not(:disabled) { color: var(--plum); background: var(--cream); }
+
+/* Press feedback — defined after tones so it always wins the click moment */
+.act:active:not(:disabled) { transform: translateY(1px); box-shadow: none; transition-duration: 0.04s; }
+
+/* Smaller variant for inline row actions */
+.act-sm { padding: 6px 12px; min-height: 32px; font-size: 0.74rem; gap: 5px; }
+.act-sm svg { width: 13px; height: 13px; }
+
+/* In-button loader — replaces the icon while an action runs. Inherits the
+   button's text colour via currentColor so it works on every tone. */
+@keyframes spin360 { to { transform: rotate(360deg); } }
+.act-spinner,
+.btn-spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin360 0.6s linear infinite;
+  flex: none;
+}
+.act-spinner { width: 14px; height: 14px; }
+.act-sm .act-spinner { width: 12px; height: 12px; }
+.btn-spinner { width: 16px; height: 16px; }
+.act[aria-busy="true"],
+.btn[aria-busy="true"] { cursor: progress; }
 
 /* Form controls -------------------------------------------- */
 .field-label {
@@ -220,6 +307,34 @@ a { color: inherit; }
 .field-textarea[aria-invalid="true"] {
   border-color: #9b2c2c;
 }
+
+/* Rich text — admin editor surface + public rendered content */
+.prose-admin, .prose-rich {
+  font-family: var(--sans);
+  color: var(--ink);
+  line-height: 1.7;
+}
+.prose-admin { font-weight: 300; }
+.prose-admin:focus-within { border-color: var(--rose); }
+.prose-admin p, .prose-rich p { margin: 0 0 0.85em; }
+.prose-admin p:last-child, .prose-rich p:last-child { margin-bottom: 0; }
+.prose-admin h3, .prose-rich h3 {
+  font-family: var(--serif);
+  color: var(--plum);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 1.2em 0 0.5em;
+}
+.prose-admin ul, .prose-rich ul { margin: 0 0 0.85em; padding-left: 1.2em; list-style: disc; }
+.prose-admin ol, .prose-rich ol { margin: 0 0 0.85em; padding-left: 1.2em; list-style: decimal; }
+.prose-admin li, .prose-rich li { margin: 0.2em 0; }
+.prose-rich { color: var(--plum-soft); }
+
+/* Modal — backdrop fade + panel rise (reduced-motion handled globally) */
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalRise { from { opacity: 0; transform: translateY(12px) scale(0.985); } to { opacity: 1; transform: none; } }
+.modal-backdrop { animation: modalFade 0.18s ease both; }
+.modal-panel { animation: modalRise 0.24s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 /* Cards ---------------------------------------------------- */
 .surface-card {
