@@ -70,7 +70,7 @@ export default async function Home() {
           <div className="mx-auto px-6 md:px-8 py-20 md:py-28 text-center" style={{ maxWidth: "760px" }}>
             <p className="eyebrow mb-4">{SITE.tagline}</p>
             <h1 id="hero-h" className="section-title text-[42px] md:text-[60px]">
-              Radiance, <span className="italic text-rose">refined.</span>
+              Radiance, <span className="italic text-brand-pink-deep">refined.</span>
             </h1>
             <Link href="/services" className="btn btn-primary mt-8">Book a procedure</Link>
           </div>
@@ -82,7 +82,7 @@ export default async function Home() {
         <div className="mx-auto px-6 md:px-8 py-5 md:py-7 flex justify-around md:justify-center md:gap-20" style={{ maxWidth: "var(--container)" }}>
           {PROMISES.map((t) => (
             <div key={t} className="flex flex-col md:flex-row items-center gap-1.5 md:gap-3 text-plum-soft text-[9.5px] md:text-[11px] tracking-[0.14em] uppercase text-center font-sans">
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.3">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-pink)" strokeWidth="1.3">
                 <path d="M12 21s-7-4.6-9-9a5 5 0 019-3 5 5 0 019 3c-2 4.4-9 9-9 9z" />
               </svg>
               {t}
@@ -95,10 +95,10 @@ export default async function Home() {
       <section aria-labelledby="treatments-h" className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-4" style={{ maxWidth: "var(--container)" }}>
         <Reveal className="flex items-end justify-between mb-7 md:mb-10">
           <h2 id="treatments-h" className="section-title text-[30px] md:text-[42px]">
-            <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>In-clinic</span>
+            <span className="eyebrow block mb-2" style={{ color: "var(--brand-blue)" }}>In-clinic</span>
             The treatment menu
           </h2>
-          <Link href="/services" className="font-sans text-[11px] md:text-xs tracking-[0.12em] uppercase text-gold-text no-underline whitespace-nowrap border-b pb-0.5 hover:text-plum transition-colors" style={{ borderColor: "var(--gold-soft)" }}>
+          <Link href="/services" className="font-sans text-[11px] md:text-xs tracking-[0.12em] uppercase text-gold-text no-underline whitespace-nowrap border-b pb-0.5 hover:text-plum transition-colors" style={{ borderColor: "var(--brand-blue-soft)" }}>
             View all
           </Link>
         </Reveal>
@@ -140,10 +140,10 @@ export default async function Home() {
       <section aria-labelledby="bestsellers-h" className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-4" style={{ maxWidth: "var(--container)" }}>
         <Reveal className="flex items-end justify-between mb-7 md:mb-10">
           <h2 id="bestsellers-h" className="section-title text-[30px] md:text-[42px]">
-            <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>Loved by clients</span>
+            <span className="eyebrow block mb-2" style={{ color: "var(--brand-pink-deep)" }}>Loved by clients</span>
             Bestsellers
           </h2>
-          <Link href="/shop" className="font-sans text-[11px] md:text-xs tracking-[0.12em] uppercase text-gold-text no-underline whitespace-nowrap border-b pb-0.5 hover:text-plum transition-colors" style={{ borderColor: "var(--gold-soft)" }}>
+          <Link href="/shop" className="font-sans text-[11px] md:text-xs tracking-[0.12em] uppercase text-gold-text no-underline whitespace-nowrap border-b pb-0.5 hover:text-plum transition-colors" style={{ borderColor: "var(--brand-blue-soft)" }}>
             View all
           </Link>
         </Reveal>
@@ -167,27 +167,27 @@ export default async function Home() {
           <p className="font-serif italic text-plum leading-[1.32] text-[26px] md:text-[40px]">
             &ldquo;{SITE.tagline}.&rdquo;
           </p>
-          <p className="eyebrow mt-6" style={{ color: "var(--rose)" }}>— {SITE.motto}</p>
+          <p className="eyebrow mt-6" style={{ color: "var(--brand-pink-deep)" }}>— {SITE.motto}</p>
         </div>
       </Reveal>
 
       {/* ===== Find us ===== */}
       <Reveal as="section" aria-labelledby="findus-h" className="mx-auto px-6 md:px-8 py-16 md:py-24" style={{ maxWidth: "var(--container)" }}>
         <h2 id="findus-h" className="section-title text-[30px] md:text-[42px] mb-8 md:mb-10">
-          <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>On Mombasa Road</span>
+          <span className="eyebrow block mb-2" style={{ color: "var(--brand-blue)" }}>On Mombasa Road</span>
           Easy to find, easy to book
         </h2>
         <FindUs />
       </Reveal>
 
       {/* ===== Booking CTA ===== */}
-      <Reveal as="section" aria-labelledby="booking-h" className="bg-plum text-ivory">
+      <Reveal as="section" aria-labelledby="booking-h" className="bg-brand-blue-deep text-ivory">
         <div className="mx-auto px-6 md:px-8 py-16 md:py-28 text-center" style={{ maxWidth: "640px" }}>
-          <p className="eyebrow" style={{ color: "var(--gold-soft)" }}>Visit us</p>
+          <p className="eyebrow" style={{ color: "var(--brand-pink-soft)" }}>Visit us</p>
           <h2 id="booking-h" className="font-serif font-medium text-ivory leading-[1.08] text-[34px] md:text-[48px] mt-4 mb-4">
             Book your consultation
           </h2>
-          <p className="font-sans font-light text-[13px] md:text-[15px] leading-[1.7] max-w-[36ch] mx-auto mb-8" style={{ color: "#E9D9D2" }}>
+          <p className="font-sans font-light text-[13px] md:text-[15px] leading-[1.7] max-w-[36ch] mx-auto mb-8" style={{ color: "rgba(255,255,255,0.82)" }}>
             Personalised skin assessments with our dermatology, nutrition and cosmetic
             experts. Walk in radiant.
           </p>

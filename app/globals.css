@@ -5,9 +5,9 @@
    Client's final brand hex may replace these values.
    ============================================================ */
 :root {
-  --ivory: #FBF7F2;
-  --cream: #F4EAE0;
-  --sand: #EADFD3;
+  --ivory: #FFFFFF;          /* dominant whitespace — pure white */
+  --cream: #FDEEED;          /* soft pink section wash */
+  --sand: #E6F2F5;           /* soft blue section wash */
   --ink: #2B1B24;
   --plum: #3C2331;
   --plum-soft: #6A4356;
@@ -18,6 +18,17 @@
   --gold-soft: #D8BD8C;
   --gold-text: #7E6130;
   --line: rgba(60, 35, 49, 0.14);
+
+  /* Brand accent palette — the business's signature blue & pink.
+     Layered over the brown/plum/gold luxury base as accents across the
+     public site. base = vivid accent · deep = legible on light bg ·
+     soft = lighter, for tints & accents on dark surfaces. */
+  --brand-blue: #228CA3;
+  --brand-blue-deep: #1A6E80;
+  --brand-blue-soft: #7FB9C6;
+  --brand-pink: #E87C7A;
+  --brand-pink-deep: #C75D5B;
+  --brand-pink-soft: #F3A8A6;
 
   /* Semantic action colours — constructive / destructive.
      Reuse the brand-harmonised greens & reds already used by status pills. */
@@ -53,6 +64,12 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-gold-text: var(--gold-text);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-deep: var(--brand-blue-deep);
+  --color-brand-blue-soft: var(--brand-blue-soft);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-pink-deep: var(--brand-pink-deep);
+  --color-brand-pink-soft: var(--brand-pink-soft);
 
   --font-serif: var(--serif);
   --font-sans: var(--sans);
@@ -74,7 +91,7 @@ a { color: inherit; }
    Accessibility primitives
    ============================================================ */
 :focus-visible {
-  outline: 2px solid var(--rose);
+  outline: 2px solid var(--brand-blue);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -149,40 +166,42 @@ a { color: inherit; }
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Primary = brand blue · the dominant call-to-action colour. */
 .btn-primary {
-  background: var(--plum);
-  color: var(--ivory);
-  border-color: var(--plum);
+  background: var(--brand-blue);
+  color: #fff;
+  border-color: var(--brand-blue);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--rose);
-  border-color: var(--rose);
-  box-shadow: 0 10px 24px rgba(60, 35, 49, 0.20);
+  background: var(--brand-blue-deep);
+  border-color: var(--brand-blue-deep);
+  box-shadow: 0 10px 24px rgba(34, 140, 163, 0.30);
   transform: translateY(-1px);
 }
 
+/* "Gold" CTA slot, recoloured to brand pink — the warm primary action. */
 .btn-gold {
-  background: var(--gold);
-  color: var(--plum);
-  border-color: var(--gold);
+  background: var(--brand-pink);
+  color: #fff;
+  border-color: var(--brand-pink);
 }
 .btn-gold:hover:not(:disabled) {
-  background: var(--gold-soft);
-  border-color: var(--gold-soft);
-  box-shadow: 0 10px 24px rgba(184, 148, 90, 0.28);
+  background: var(--brand-pink-deep);
+  border-color: var(--brand-pink-deep);
+  box-shadow: 0 10px 24px rgba(232, 124, 122, 0.34);
   transform: translateY(-1px);
 }
 
 .btn-outline {
   background: transparent;
-  color: var(--plum);
-  border-color: var(--gold);
+  color: var(--brand-blue-deep);
+  border-color: var(--brand-blue);
 }
 .btn-outline:hover:not(:disabled) {
-  background: var(--plum);
-  color: var(--ivory);
-  border-color: var(--plum);
-  box-shadow: 0 10px 24px rgba(60, 35, 49, 0.18);
+  background: var(--brand-blue);
+  color: #fff;
+  border-color: var(--brand-blue);
+  box-shadow: 0 10px 24px rgba(34, 140, 163, 0.22);
   transform: translateY(-1px);
 }
 
@@ -292,8 +311,8 @@ a { color: inherit; }
 .field-select:focus,
 .field-textarea:focus {
   outline: none;
-  border-color: var(--rose);
-  box-shadow: 0 0 0 3px rgba(185, 126, 120, 0.16);
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(34, 140, 163, 0.18);
 }
 
 .field-error {

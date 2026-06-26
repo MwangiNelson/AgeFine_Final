@@ -28,7 +28,7 @@ export default function AdminShell({
       >
         <div className="px-5 py-4 md:py-6 flex items-center justify-between md:block">
           <Link href="/admin" className="no-underline">
-            <span className="block font-serif font-medium text-xl tracking-[0.16em] text-plum">AGEFINE</span>
+            <span className="block font-serif font-medium text-xl tracking-[0.16em]"><span className="text-brand-blue">AGE</span><span className="text-brand-pink">FINE</span></span>
             <span className="block eyebrow mt-1">admin</span>
           </Link>
         </div>

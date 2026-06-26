@@ -62,7 +62,7 @@ export default function SiteHeader() {
     count > 0 ? (
       <span
         aria-hidden="true"
-        className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose text-white text-[10px] font-medium flex items-center justify-center"
+        className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-pink text-white text-[10px] font-medium flex items-center justify-center"
       >
         {count}
       </span>
@@ -72,7 +72,7 @@ export default function SiteHeader() {
     <header
       className="sticky top-0 z-30 transition-[border-color,box-shadow] duration-300"
       style={{
-        background: "rgba(251,247,242,0.88)",
+        background: "rgba(255,255,255,0.85)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderBottom: stuck ? "0.5px solid var(--line)" : "0.5px solid transparent",
@@ -101,10 +101,10 @@ export default function SiteHeader() {
           className="text-center leading-none no-underline md:mr-auto md:text-left"
           aria-label="Agefine home"
         >
-          <span className="block font-serif font-medium text-[22px] md:text-2xl tracking-[0.16em] text-plum">
-            AGEFINE
+          <span className="block font-serif font-medium text-[22px] md:text-2xl tracking-[0.16em]">
+            <span className="text-brand-blue">AGE</span><span className="text-brand-pink">FINE</span>
           </span>
-          <span className="block font-sans text-[8.5px] md:text-[9px] tracking-[0.34em] uppercase text-rose mt-[3px]">
+          <span className="block font-sans text-[8.5px] md:text-[9px] tracking-[0.34em] uppercase text-brand-pink-deep mt-[3px]">
             beauty lab &amp; clinic
           </span>
         </Link>
@@ -124,7 +124,7 @@ export default function SiteHeader() {
                 {link.label}
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 -bottom-0.5 h-px bg-gold transition-[width] duration-300"
+                  className="absolute left-0 -bottom-0.5 h-px bg-brand-blue transition-[width] duration-300"
                   style={{ width: active ? "100%" : 0 }}
                 />
               </Link>
@@ -162,7 +162,7 @@ export default function SiteHeader() {
             className="absolute left-0 top-0 h-full w-[82%] max-w-[320px] bg-ivory shadow-2xl flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "var(--line)" }}>
-              <span className="font-serif font-medium text-xl tracking-[0.16em] text-plum">AGEFINE</span>
+              <span className="font-serif font-medium text-xl tracking-[0.16em]"><span className="text-brand-blue">AGE</span><span className="text-brand-pink">FINE</span></span>
               <button
                 type="button"
                 aria-label="Close menu"
@@ -184,7 +184,7 @@ export default function SiteHeader() {
                     onClick={() => setMenuOpen(false)}
                     aria-current={active ? "page" : undefined}
                     className="font-serif text-2xl py-3.5 no-underline border-b"
-                    style={{ color: active ? "var(--rose)" : "var(--plum)", borderColor: "var(--line)" }}
+                    style={{ color: active ? "var(--brand-pink-deep)" : "var(--plum)", borderColor: "var(--line)" }}
                   >
                     {link.label}
                   </Link>

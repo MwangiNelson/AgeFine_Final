@@ -65,7 +65,7 @@ export default function BottomNav() {
       aria-label="Primary mobile"
       className="md:hidden fixed left-0 right-0 bottom-0 z-40 flex justify-around items-stretch"
       style={{
-        background: "rgba(251,247,242,0.94)",
+        background: "rgba(255,255,255,0.92)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
         borderTop: "0.5px solid var(--line)",
@@ -80,14 +80,14 @@ export default function BottomNav() {
             href={tab.href}
             aria-current={active ? "page" : undefined}
             className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] pt-2 no-underline font-sans text-[8.5px] tracking-[0.12em] uppercase"
-            style={{ color: active ? "var(--rose)" : "var(--plum-soft)" }}
+            style={{ color: active ? "var(--brand-pink-deep)" : "var(--plum-soft)" }}
           >
             <span className="relative">
               {tab.icon}
               {tab.withCount && count > 0 && (
                 <span
                   aria-hidden="true"
-                  className="absolute -top-1 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-rose text-white text-[8px] font-medium flex items-center justify-center"
+                  className="absolute -top-1 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-brand-pink text-white text-[8px] font-medium flex items-center justify-center"
                 >
                   {count}
                 </span>

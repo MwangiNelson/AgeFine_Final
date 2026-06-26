@@ -107,7 +107,7 @@ export default function CheckoutPage() {
                 <path d="M5 12l5 5L20 7" />
               </svg>
             </div>
-            <p className="eyebrow mb-3" style={{ color: "var(--rose)" }}>Order received</p>
+            <p className="eyebrow mb-3" style={{ color: "var(--brand-pink-deep)" }}>Order received</p>
             <h1 className="section-title text-[32px] md:text-[42px] mb-3">Thank you{confirmation.customerName ? `, ${confirmation.customerName.split(" ")[0]}` : ""}.</h1>
             <p className="font-sans font-light text-plum-soft text-[15px] leading-relaxed mb-2">
               Order <span className="font-medium text-plum">#{confirmation.orderId.slice(0, 8)}</span> has been placed.
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
     <SiteShell showFooter={false}>
       <div className="mx-auto px-6 md:px-8 pt-12 md:pt-20 pb-20 md:pb-28" style={{ maxWidth: "var(--container)" }}>
         <header className="mb-8 md:mb-12">
-          <p className="eyebrow mb-3" style={{ color: "var(--rose)" }}>Almost there</p>
+          <p className="eyebrow mb-3" style={{ color: "var(--brand-blue)" }}>Almost there</p>
           <h1 className="section-title text-[40px] md:text-[56px]">Checkout</h1>
         </header>
 
@@ -215,8 +215,8 @@ export default function CheckoutPage() {
                       key={method}
                       className="cursor-pointer rounded-lg border px-4 py-4 flex items-center gap-3 transition-colors"
                       style={{
-                        borderColor: selected ? "var(--plum)" : "var(--line)",
-                        background: selected ? "var(--cream)" : "#fff",
+                        borderColor: selected ? "var(--brand-blue)" : "var(--line)",
+                        background: selected ? "var(--sand)" : "#fff",
                       }}
                     >
                       <input
@@ -225,7 +225,7 @@ export default function CheckoutPage() {
                         value={method}
                         checked={selected}
                         onChange={() => update("delivery_method", method)}
-                        className="accent-[var(--plum)] w-4 h-4"
+                        className="accent-[var(--brand-blue)] w-4 h-4"
                       />
                       <span className="font-sans text-sm text-plum capitalize">{method}</span>
                     </label>

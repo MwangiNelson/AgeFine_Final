@@ -23,9 +23,9 @@ export default function AboutPage() {
     <SiteShell>
       <section className="bg-cream border-b" style={{ borderColor: "var(--line)" }}>
         <div className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-14 md:pb-20" style={{ maxWidth: "760px" }}>
-          <p className="eyebrow mb-4" style={{ color: "var(--rose)" }}>Our story</p>
+          <p className="eyebrow mb-4" style={{ color: "var(--brand-pink-deep)" }}>Our story</p>
           <h1 className="section-title text-[42px] md:text-[60px] leading-[1.04]">
-            Where science speaks, <span className="italic text-rose">aesthetics listens.</span>
+            Where science speaks, <span className="italic text-brand-pink-deep">aesthetics listens.</span>
           </h1>
           <p className="font-sans font-light text-plum-soft text-[15px] md:text-lg leading-relaxed mt-6 max-w-[54ch]">
             {SITE.name} is an aesthetics lab and clinic on the 2nd floor of Imaara Shopping Mall,
@@ -69,7 +69,7 @@ export default function AboutPage() {
       <section aria-labelledby="training-about-h" className="bg-sand">
         <div className="mx-auto px-6 md:px-8 py-14 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center" style={{ maxWidth: "var(--container)" }}>
           <div>
-            <p className="eyebrow mb-3" style={{ color: "var(--rose)" }}>More than a clinic</p>
+            <p className="eyebrow mb-3" style={{ color: "var(--brand-blue)" }}>More than a clinic</p>
             <h2 id="training-about-h" className="section-title text-[30px] md:text-[40px] mb-4">We also teach aesthetics</h2>
             <p className="font-sans font-light text-plum-soft text-[15px] leading-[1.8] max-w-[52ch]">
               Through Agefine Aesthetics Training we run TVET-approved courses in aesthetics
@@ -87,15 +87,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-plum text-ivory">
+      <section className="bg-brand-blue-deep text-ivory">
         <div className="mx-auto px-6 md:px-8 py-16 md:py-24 text-center" style={{ maxWidth: "620px" }}>
-          <p className="eyebrow" style={{ color: "var(--gold-soft)" }}>Visit the clinic</p>
+          <p className="eyebrow" style={{ color: "var(--brand-pink-soft)" }}>Visit the clinic</p>
           <h2 className="font-serif font-medium text-ivory text-[32px] md:text-[44px] mt-4 mb-5">
             Start your skin journey
           </h2>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/services" className="btn btn-gold">Book a consultation</Link>
-            <Link href="/shop" className="btn btn-outline" style={{ color: "var(--ivory)", borderColor: "var(--gold-soft)" }}>Shop skincare</Link>
+            <Link href="/shop" className="btn btn-outline" style={{ color: "var(--ivory)", borderColor: "rgba(255,255,255,0.6)" }}>Shop skincare</Link>
           </div>
         </div>
       </section>

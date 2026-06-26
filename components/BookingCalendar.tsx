@@ -107,9 +107,9 @@ export default function BookingCalendar({ date, time, onSelectDate, onSelectTime
                     onClick={() => onSelectDate(selected ? "" : iso)}
                     className="aspect-square min-h-[40px] m-0.5 rounded-full font-sans text-[13px] transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
                     style={{
-                      background: selected ? "var(--plum)" : "transparent",
-                      color: selected ? "var(--ivory)" : "var(--plum)",
-                      border: selected ? "1px solid var(--plum)" : "1px solid transparent",
+                      background: selected ? "var(--brand-blue)" : "transparent",
+                      color: selected ? "#fff" : "var(--plum)",
+                      border: selected ? "1px solid var(--brand-blue)" : "1px solid transparent",
                     }}
                   >
                     {day.getDate()}
@@ -135,9 +135,9 @@ export default function BookingCalendar({ date, time, onSelectDate, onSelectTime
                     onClick={() => onSelectTime(selected ? "" : slot)}
                     className="font-sans text-[12.5px] tracking-[0.04em] px-3.5 min-h-[40px] rounded-full transition-colors"
                     style={{
-                      background: selected ? "var(--plum)" : "var(--cream)",
-                      color: selected ? "var(--ivory)" : "var(--plum)",
-                      border: "1px solid " + (selected ? "var(--plum)" : "var(--line)"),
+                      background: selected ? "var(--brand-blue)" : "var(--sand)",
+                      color: selected ? "#fff" : "var(--plum)",
+                      border: "1px solid " + (selected ? "var(--brand-blue)" : "var(--line)"),
                     }}
                   >
                     {formatSlot(slot)}

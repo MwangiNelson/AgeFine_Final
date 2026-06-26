@@ -24,9 +24,9 @@ export default function ShopGrid({ products, categories }: { products: Product[]
               className="whitespace-nowrap font-sans text-[11.5px] md:text-xs tracking-[0.1em] uppercase px-4 py-2.5 rounded-full border cursor-pointer transition-colors"
               style={{
                 minHeight: 40,
-                borderColor: sel ? "var(--plum)" : "var(--line)",
-                background: sel ? "var(--plum)" : "transparent",
-                color: sel ? "var(--ivory)" : "var(--plum-soft)",
+                borderColor: sel ? "var(--brand-blue)" : "var(--line)",
+                background: sel ? "var(--brand-blue)" : "transparent",
+                color: sel ? "#fff" : "var(--plum-soft)",
               }}
             >
               {c.name}

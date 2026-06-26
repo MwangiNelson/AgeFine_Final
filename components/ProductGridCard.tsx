@@ -56,7 +56,7 @@ export default function ProductGridCard({ product, index = 0 }: { product: Produ
           aria-label={added ? `${product.name} added to bag` : `Add ${product.name} to bag`}
           onClick={handleAdd}
           className="flex items-center justify-center w-11 h-11 -mr-1.5 rounded-full text-ivory border-0 cursor-pointer transition-colors"
-          style={{ background: added ? "var(--gold)" : "var(--plum)" }}
+          style={{ background: added ? "var(--brand-pink)" : "var(--brand-blue)" }}
         >
           {added ? (
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -48,7 +48,7 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 md:gap-12">
           {/* Brand */}
           <div>
-            <p className="font-serif text-2xl tracking-[0.16em] text-plum m-0">AGEFINE</p>
+            <p className="font-serif text-2xl tracking-[0.16em] m-0"><span className="text-brand-blue">AGE</span><span className="text-brand-pink">FINE</span></p>
             <p className="eyebrow mt-1.5">beauty lab &amp; clinic</p>
             <p className="font-sans font-light text-sm leading-relaxed text-plum-soft mt-5 max-w-[34ch]">
               {SITE.tagline}. Anti-ageing and aesthetic skin solutions by dermatology,
@@ -106,7 +106,7 @@ export default function SiteFooter() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${SITE.name} on ${key}`}
-                      className="flex items-center justify-center w-10 h-10 rounded-full border text-plum-soft hover:text-plum hover:border-plum transition-colors"
+                      className="flex items-center justify-center w-10 h-10 rounded-full border text-plum-soft hover:text-brand-blue hover:border-brand-blue transition-colors"
                       style={{ borderColor: "var(--line)" }}
                     >
                       {SOCIAL_ICONS[key]}

@@ -35,9 +35,9 @@ export default function CareersPage() {
       {/* Hero */}
       <section className="bg-cream border-b" style={{ borderColor: "var(--line)" }}>
         <div className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-14 md:pb-20 text-center" style={{ maxWidth: "760px" }}>
-          <p className="eyebrow mb-4" style={{ color: "var(--rose)" }}>Careers &amp; training · Admissions ongoing</p>
+          <p className="eyebrow mb-4" style={{ color: "var(--brand-pink-deep)" }}>Careers &amp; training · Admissions ongoing</p>
           <h1 className="section-title text-[42px] md:text-[60px] leading-[1.02]">
-            Build a career in <span className="italic text-rose">aesthetics.</span>
+            Build a career in <span className="italic text-brand-pink-deep">aesthetics.</span>
           </h1>
           <p className="font-sans font-light text-plum-soft text-[15px] md:text-lg leading-relaxed mt-5 max-w-[52ch] mx-auto">
             Join the {SITE.shortName} team — or study aesthetics science with us and earn
@@ -58,7 +58,7 @@ export default function CareersPage() {
               style={{ backgroundImage: `url(${TRAINING_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center 25%" }}
             />
             <h2 id="training-h" className="section-title text-[28px] md:text-[36px] mb-3">
-              <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>Agefine Aesthetics Training</span>
+              <span className="eyebrow block mb-2" style={{ color: "var(--brand-blue)" }}>Agefine Aesthetics Training</span>
               Study aesthetics science
             </h2>
             <p className="font-sans font-light text-plum-soft text-[15px] md:text-base leading-[1.8] max-w-[62ch]">
@@ -70,7 +70,7 @@ export default function CareersPage() {
             <ul className="list-none p-0 m-0 mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
               {TRAINING_POINTS.map((p) => (
                 <li key={p} className="flex items-start gap-3 font-sans font-light text-plum text-[14.5px] leading-relaxed">
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.6" className="mt-0.5 shrink-0">
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)" strokeWidth="1.6" className="mt-0.5 shrink-0">
                     <path d="M5 12l5 5L20 7" />
                   </svg>
                   {p}
@@ -88,7 +88,7 @@ export default function CareersPage() {
               style={{ backgroundImage: `url(${CLINIC_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center 30%" }}
             />
             <h2 id="team-h" className="section-title text-[28px] md:text-[36px] mb-3">
-              <span className="eyebrow block mb-2" style={{ color: "var(--rose)" }}>Work with us</span>
+              <span className="eyebrow block mb-2" style={{ color: "var(--brand-pink-deep)" }}>Work with us</span>
               Join the {SITE.shortName} team
             </h2>
             <p className="font-sans font-light text-plum-soft text-[15px] md:text-base leading-[1.8] max-w-[62ch]">
@@ -99,7 +99,7 @@ export default function CareersPage() {
             <ul className="list-none p-0 m-0 mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
               {TEAM_POINTS.map((p) => (
                 <li key={p} className="flex items-start gap-3 font-sans font-light text-plum text-[14.5px] leading-relaxed">
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.6" className="mt-0.5 shrink-0">
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-pink)" strokeWidth="1.6" className="mt-0.5 shrink-0">
                     <path d="M5 12l5 5L20 7" />
                   </svg>
                   {p}

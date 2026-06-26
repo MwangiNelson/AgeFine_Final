@@ -79,7 +79,7 @@ export default function AcceptInvitePage() {
       <div className="w-full max-w-[420px]">
         <div className="text-center mb-8">
           <Link href="/" className="no-underline">
-            <span className="block font-serif font-medium text-2xl tracking-[0.16em] text-plum">AGEFINE</span>
+            <span className="block font-serif font-medium text-2xl tracking-[0.16em]"><span className="text-brand-blue">AGE</span><span className="text-brand-pink">FINE</span></span>
             <span className="block eyebrow mt-1.5">admin</span>
           </Link>
         </div>

@@ -24,13 +24,13 @@ export default function FindUs({ compact = false }: { compact?: boolean }) {
           <dd className="m-0 text-plum">{SITE.openingHoursHuman}</dd>
           <dt className="text-plum-soft">Clinic</dt>
           <dd className="m-0">
-            <a href={`tel:${SITE.phone}`} className="text-plum no-underline hover:text-rose transition-colors">
+            <a href={`tel:${SITE.phone}`} className="text-plum no-underline hover:text-brand-blue transition-colors">
               {SITE.phone.replace("+254", "0")}
             </a>
           </dd>
           <dt className="text-plum-soft">Bookings</dt>
           <dd className="m-0">
-            <a href={`tel:${SITE.bookingPhone}`} className="text-plum no-underline hover:text-rose transition-colors">
+            <a href={`tel:${SITE.bookingPhone}`} className="text-plum no-underline hover:text-brand-blue transition-colors">
               {SITE.bookingPhone.replace("+254", "0")}
             </a>
           </dd>

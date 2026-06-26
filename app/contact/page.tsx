@@ -57,7 +57,7 @@ export default function ContactPage() {
     <SiteShell>
       <section className="bg-cream border-b" style={{ borderColor: "var(--line)" }}>
         <div className="mx-auto px-6 md:px-8 pt-14 md:pt-24 pb-14 md:pb-20 text-center" style={{ maxWidth: "680px" }}>
-          <p className="eyebrow mb-4" style={{ color: "var(--rose)" }}>We&apos;d love to hear from you</p>
+          <p className="eyebrow mb-4" style={{ color: "var(--brand-pink-deep)" }}>We&apos;d love to hear from you</p>
           <h1 className="section-title text-[42px] md:text-[60px]">Get in touch</h1>
           <p className="font-sans font-light text-plum-soft text-[15px] md:text-lg leading-relaxed mt-5 max-w-[44ch] mx-auto">
             Questions about a product or procedure? Send us a note and we&apos;ll respond shortly.

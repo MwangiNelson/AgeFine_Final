@@ -21,7 +21,7 @@ export default function SiteShell({
       <a href="#main" className="skip-link">Skip to content</a>
 
       {announcement && (
-        <div className="bg-plum text-gold-soft text-[11px] tracking-[0.18em] uppercase text-center px-3 py-2 font-sans">
+        <div className="bg-brand-blue text-[#111111] text-[11px] tracking-[0.18em] uppercase text-center px-3 py-2 font-sans">
           {announcement}
         </div>
       )}

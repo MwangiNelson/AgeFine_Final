@@ -66,7 +66,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-plum">
+      <section className="relative overflow-hidden bg-brand-blue-deep">
         {service.image_url && (
           <div
             aria-hidden="true"
@@ -85,7 +85,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               ← All treatments
             </Link>
           </nav>
-          <p className="eyebrow mb-3" style={{ color: "var(--gold-soft)" }}>{service.category}</p>
+          <p className="eyebrow mb-3" style={{ color: "var(--brand-pink-soft)" }}>{service.category}</p>
           <h1 className="font-serif font-medium leading-[1.04] text-[clamp(2.3rem,6.5vw,3.8rem)] m-0 max-w-[18ch]" style={{ color: "var(--ivory)" }}>
             {service.name}
           </h1>

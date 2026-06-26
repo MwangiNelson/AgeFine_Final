@@ -11,7 +11,7 @@ export default function CartPage() {
     <SiteShell showFooter={false}>
       <div className="mx-auto px-6 md:px-8 pt-12 md:pt-20 pb-20 md:pb-28" style={{ maxWidth: "var(--container)" }}>
         <header className="mb-8 md:mb-12">
-          <p className="eyebrow mb-3" style={{ color: "var(--rose)" }}>Your selection</p>
+          <p className="eyebrow mb-3" style={{ color: "var(--brand-pink-deep)" }}>Your selection</p>
           <h1 className="section-title text-[40px] md:text-[56px]">Shopping bag</h1>
         </header>
 
@@ -50,7 +50,7 @@ export default function CartPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <Link href={`/shop/${item.slug}`} className="font-serif text-plum text-lg md:text-xl no-underline hover:text-rose transition-colors block leading-tight">
+                        <Link href={`/shop/${item.slug}`} className="font-serif text-plum text-lg md:text-xl no-underline hover:text-brand-blue transition-colors block leading-tight">
                           {item.name}
                         </Link>
                         <p className="font-sans text-plum-soft text-sm mt-1">
@@ -61,7 +61,7 @@ export default function CartPage() {
                         type="button"
                         onClick={() => removeItem(item.id)}
                         aria-label={`Remove ${item.name} from bag`}
-                        className="flex-none flex items-center justify-center w-11 h-11 -mr-1.5 text-plum-soft hover:text-rose transition-colors"
+                        className="flex-none flex items-center justify-center w-11 h-11 -mr-1.5 text-plum-soft hover:text-brand-pink-deep transition-colors"
                       >
                         <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13h10l1-13" />

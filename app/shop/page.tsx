@@ -20,7 +20,7 @@ export default async function ShopPage() {
   return (
     <SiteShell>
       <section className="mx-auto px-6 md:px-8 pt-12 md:pt-20 pb-2 md:pb-4" style={{ maxWidth: "var(--container)" }}>
-        <p className="eyebrow mb-3" style={{ color: "var(--rose)" }}>The collection</p>
+        <p className="eyebrow mb-3" style={{ color: "var(--brand-pink-deep)" }}>The collection</p>
         <h1 className="section-title text-[40px] md:text-[56px]">Shop</h1>
         <p className="font-sans font-light text-plum-soft mt-3 text-[15px] md:text-base max-w-[42ch]">
           Skincare crafted for your glow — formulated and selected by our clinical team.

@@ -11,6 +11,9 @@ const CREAM = "#F4EAE0";
 const PLUM = "#3C2331";
 const ROSE = "#B97E78";
 const GOLD = "#B8945A";
+// Wordmark: AGE in brand blue, FINE in brand pink.
+const BRAND_PINK = "#E87C7A";
+const BRAND_BLUE = "#228CA3";
 
 export default function OgImage() {
   return new ImageResponse(
@@ -40,8 +43,9 @@ export default function OgImage() {
         >
           Skin · Beauty · Confidence
         </div>
-        <div style={{ fontSize: 132, fontWeight: 600, letterSpacing: 18, color: PLUM, lineHeight: 1 }}>
-          AGEFINE
+        <div style={{ display: "flex", fontSize: 132, fontWeight: 600, letterSpacing: 18, lineHeight: 1 }}>
+          <span style={{ color: BRAND_BLUE }}>AGE</span>
+          <span style={{ color: BRAND_PINK }}>FINE</span>
         </div>
         <div style={{ fontSize: 34, color: PLUM, marginTop: 24, opacity: 0.8 }}>
           {SITE.tagline}

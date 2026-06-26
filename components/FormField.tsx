@@ -23,7 +23,7 @@ export function TextField({
   return (
     <div>
       <label htmlFor={id} className="field-label">
-        {label}{required && <span aria-hidden="true" className="text-rose"> *</span>}
+        {label}{required && <span aria-hidden="true" className="text-brand-pink-deep"> *</span>}
       </label>
       {hint && <p id={hintId} className="font-sans text-xs text-plum-soft mb-2 -mt-1">{hint}</p>}
       <input
@@ -50,7 +50,7 @@ export function TextAreaField({
   return (
     <div>
       <label htmlFor={id} className="field-label">
-        {label}{required && <span aria-hidden="true" className="text-rose"> *</span>}
+        {label}{required && <span aria-hidden="true" className="text-brand-pink-deep"> *</span>}
       </label>
       {hint && <p id={hintId} className="font-sans text-xs text-plum-soft mb-2 -mt-1">{hint}</p>}
       <textarea
@@ -75,7 +75,7 @@ export function SelectField({
   return (
     <div>
       <label htmlFor={id} className="field-label">
-        {label}{required && <span aria-hidden="true" className="text-rose"> *</span>}
+        {label}{required && <span aria-hidden="true" className="text-brand-pink-deep"> *</span>}
       </label>
       <select
         id={id}

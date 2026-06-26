@@ -99,7 +99,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             {/* Copy */}
             <div className="absolute inset-x-0 bottom-0">
               <div className="mx-auto px-6 md:px-8 pb-20 md:pb-24" style={{ maxWidth: "var(--container)" }}>
-                <p className="eyebrow mb-3" style={{ color: "var(--gold-soft)" }}>
+                <p className="eyebrow mb-3" style={{ color: "var(--brand-pink-soft)" }}>
                   Signature procedure
                 </p>
                 <h2 className="font-serif font-medium leading-[1.04] text-[clamp(2.2rem,7vw,4rem)] m-0 max-w-[16ch]" style={{ color: "var(--ivory)" }}>
@@ -145,7 +145,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 <span
                   aria-hidden="true"
                   className="block h-[3px] w-full rounded-full transition-colors"
-                  style={{ background: i === index ? "var(--gold-soft)" : "rgba(251,247,242,0.35)" }}
+                  style={{ background: i === index ? "var(--brand-blue-soft)" : "rgba(251,247,242,0.35)" }}
                 />
               </button>
             ))}
