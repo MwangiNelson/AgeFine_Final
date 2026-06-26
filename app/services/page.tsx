@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Treatments & Procedures",
   description:
-    `Aesthetic skin treatments at ${SITE.name}, Imaara Mall, Nairobi — chemical peels, microneedling, LED light therapy, HydraFacial, mesotherapy, IV nutrition and more. Book in-app with our calendar.`,
+    `Aesthetic skin treatments at ${SITE.name}, Imaara Shopping Mall, Nairobi — chemical peels, microneedling, LED light therapy, HydraFacial, mesotherapy, IV nutrition and more. Book in-app with our calendar.`,
   alternates: { canonical: "/services" },
   openGraph: { title: `Treatments & Procedures — ${SITE.shortName}`, url: "/services" },
 };
@@ -53,7 +53,7 @@ export default async function ServicesPage() {
           </h1>
           <p className="font-sans font-light text-plum-soft text-[15px] md:text-lg leading-relaxed mt-5 max-w-[48ch] mx-auto">
             Science-backed treatments by dermatology, nutrition and cosmetic experts at
-            our Imaara Mall clinic. Pick a treatment, choose a time — we&rsquo;ll confirm.
+            our Imaara Shopping Mall clinic. Pick a treatment, choose a time — we&rsquo;ll confirm.
           </p>
         </div>
       </section>

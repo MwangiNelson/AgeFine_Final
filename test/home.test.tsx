@@ -50,6 +50,6 @@ describe("Home page", () => {
     const { container } = await renderHome();
     const frame = container.querySelector("iframe");
     expect(frame).not.toBeNull();
-    expect(frame!.title).toMatch(/Imaara Mall/);
+    expect(frame!.title).toMatch(/Imaara Shopping Mall/);
   });
 });

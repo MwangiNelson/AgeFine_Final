@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getService(slug);
   if (!service) return { title: "Treatment not found" };
   const description =
-    excerpt(service.description, 200) || `${service.name} at ${SITE.name}, Imaara Mall, Nairobi.`;
+    excerpt(service.description, 200) || `${service.name} at ${SITE.name}, Imaara Shopping Mall, Nairobi.`;
   return {
     title: `${service.name} — Treatments`,
     description,
@@ -123,7 +123,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 ))}
               </div>
               <p className="font-sans text-[12px] text-plum-soft mt-3 mb-0">
-                Real treatments at our Imaara Mall clinic — more on{" "}
+                Real treatments at our Imaara Shopping Mall clinic — more on{" "}
                 <a href={SITE.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gold-text">
                   Instagram @agefine_beauty
                 </a>

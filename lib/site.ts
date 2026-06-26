@@ -25,7 +25,7 @@ export const SITE = {
   tagline: "Where Science Speaks, Aesthetics Listens",
   motto: "Treat · Resolve · Maintain",
   description:
-    "Anti-ageing and aesthetic skin solutions at Imaara Mall, Nairobi — chemical peels, microneedling, LED therapy, HydraFacials and more, led by dermatology, nutrition and cosmetic experts. Shop online or book a procedure.",
+    "Anti-ageing and aesthetic skin solutions at Imaara Shopping Mall, Nairobi — chemical peels, microneedling, LED therapy, HydraFacials and more, led by dermatology, nutrition and cosmetic experts. Shop online or book a procedure.",
   locale: "en_KE",
   url: SITE_URL,
 
@@ -38,14 +38,14 @@ export const SITE = {
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "254716290865",
   email: "hello@agefine.co.ke",
   address: {
-    streetAddress: "Imaara Mall, 2nd Floor, Mombasa Road",
+    streetAddress: "Imaara Shopping Mall, 2nd Floor, Mombasa Road",
     locality: "Nairobi",
     region: "Nairobi",
     postalCode: "",
     country: "KE",
   },
   /**
-   * Approximate clinic coordinates (Imaara Mall, Mombasa Road / Imara Daima).
+   * Approximate clinic coordinates (Imaara Shopping Mall, Mombasa Road / Imara Daima).
    * Used only for structured data; the customer-facing directions links
    * resolve by place name, so they always land on the right pin.
    */
@@ -82,7 +82,9 @@ export function absoluteUrl(path = "/"): string {
 
 /* ---- Maps / directions (resolve by place name — no API key needed) ---- */
 
-const MAPS_QUERY = "Agefine Beauty Lab & Clinic, Imaara Mall, Mombasa Road, Nairobi";
+// Resolve by the mall's registered place name (not the business name, which
+// is not yet a Google place) so directions/search always land on a real pin.
+const MAPS_QUERY = "Imaara Shopping Mall, Mombasa Road, Nairobi";
 
 /** Google Maps place search — opens the clinic pin. */
 export function mapsSearchUrl(): string {
@@ -96,5 +98,5 @@ export function mapsDirectionsUrl(): string {
 
 /** Keyless Google Maps embed for the find-us map. */
 export function mapsEmbedUrl(): string {
-  return `https://maps.google.com/maps?q=${encodeURIComponent("Imaara Mall, Mombasa Road, Nairobi")}&z=15&output=embed`;
+  return `https://maps.google.com/maps?q=${encodeURIComponent(MAPS_QUERY)}&z=15&output=embed`;
 }

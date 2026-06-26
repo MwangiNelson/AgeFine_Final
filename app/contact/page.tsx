@@ -5,7 +5,7 @@ import { SITE, whatsappLink, mapsDirectionsUrl, mapsEmbedUrl } from "@/lib/site"
 export const metadata = {
   title: "Contact & Directions",
   description:
-    `Get in touch with ${SITE.name} — Imaara Mall, 2nd Floor, Mombasa Road, Nairobi. Call, WhatsApp, get directions, or send an enquiry and we'll respond shortly.`,
+    `Get in touch with ${SITE.name} — Imaara Shopping Mall, 2nd Floor, Mombasa Road, Nairobi. Call, WhatsApp, get directions, or send an enquiry and we'll respond shortly.`,
   alternates: { canonical: "/contact" },
   openGraph: { title: `Contact — ${SITE.shortName}`, url: "/contact" },
 };
@@ -98,7 +98,7 @@ export default function ContactPage() {
 
           <div className="mt-8 rounded-xl overflow-hidden border" style={{ borderColor: "var(--line)" }}>
             <iframe
-              title={`Map showing ${SITE.name} at Imaara Mall, Mombasa Road, Nairobi`}
+              title={`Map showing ${SITE.name} at Imaara Shopping Mall, Mombasa Road, Nairobi`}
               src={mapsEmbedUrl()}
               className="w-full h-56 md:h-72 border-0 block"
               loading="lazy"
@@ -109,7 +109,7 @@ export default function ContactPage() {
             <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 21s-7-5.5-7-11a7 7 0 1114 0c0 5.5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
             </svg>
-            Get directions to Imaara Mall
+            Get directions to Imaara Shopping Mall
           </a>
         </section>
 

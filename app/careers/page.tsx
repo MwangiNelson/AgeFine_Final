@@ -6,7 +6,7 @@ import { SITE } from "@/lib/site";
 export const metadata = {
   title: "Careers & Training",
   description:
-    `Work at ${SITE.name} or train in aesthetics science — TVET-approved courses with practical skills, science-backed techniques and industry certification. Admissions ongoing at Imaara Mall, Nairobi.`,
+    `Work at ${SITE.name} or train in aesthetics science — TVET-approved courses with practical skills, science-backed techniques and industry certification. Admissions ongoing at Imaara Shopping Mall, Nairobi.`,
   alternates: { canonical: "/careers" },
   openGraph: { title: `Careers & Training — ${SITE.shortName}`, url: "/careers" },
 };
@@ -83,7 +83,7 @@ export default function CareersPage() {
           <Reveal as="section" aria-labelledby="team-h">
             <div
               role="img"
-              aria-label="An Agefine aesthetician performing a treatment at the Imaara Mall clinic"
+              aria-label="An Agefine aesthetician performing a treatment at the Imaara Shopping Mall clinic"
               className="rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] mb-7"
               style={{ backgroundImage: `url(${CLINIC_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center 30%" }}
             />

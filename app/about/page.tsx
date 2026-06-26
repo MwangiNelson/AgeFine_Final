@@ -5,7 +5,7 @@ import { SITE } from "@/lib/site";
 export const metadata = {
   title: "About",
   description:
-    `${SITE.name} is an aesthetics lab and clinic at Imaara Mall, Nairobi — anti-ageing and aesthetic skin solutions by dermatology, nutrition and cosmetic experts, plus TVET-approved aesthetics training.`,
+    `${SITE.name} is an aesthetics lab and clinic at Imaara Shopping Mall, Nairobi — anti-ageing and aesthetic skin solutions by dermatology, nutrition and cosmetic experts, plus TVET-approved aesthetics training.`,
   alternates: { canonical: "/about" },
   openGraph: { title: `About — ${SITE.shortName}`, url: "/about" },
 };
@@ -28,7 +28,7 @@ export default function AboutPage() {
             Where science speaks, <span className="italic text-rose">aesthetics listens.</span>
           </h1>
           <p className="font-sans font-light text-plum-soft text-[15px] md:text-lg leading-relaxed mt-6 max-w-[54ch]">
-            {SITE.name} is an aesthetics lab and clinic on the 2nd floor of Imaara Mall,
+            {SITE.name} is an aesthetics lab and clinic on the 2nd floor of Imaara Shopping Mall,
             Mombasa Road, Nairobi. Our dermatology, nutrition and cosmetic experts pair
             science-backed treatments — peels, microneedling, LED therapy, mesotherapy and
             more — with honest guidance, so your glow comes from genuinely healthy skin.

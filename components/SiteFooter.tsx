@@ -123,7 +123,7 @@ export default function SiteFooter() {
           style={{ borderColor: "var(--line)" }}
         >
           <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">
-            © 2026 {SITE.name} · Imaara Mall, Nairobi
+            © 2026 {SITE.name} · Imaara Shopping Mall, Nairobi
           </p>
           <div className="flex items-center gap-4">
             <p className="font-sans text-xs text-plum-soft tracking-[0.04em] m-0">

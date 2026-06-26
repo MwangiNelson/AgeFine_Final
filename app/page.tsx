@@ -10,7 +10,7 @@ import { excerpt } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
-const PROMISES = ["Science-backed treatments", "Dermatology · Nutrition · Cosmetic experts", "Imaara Mall, Mombasa Road"];
+const PROMISES = ["Science-backed treatments", "Dermatology · Nutrition · Cosmetic experts", "Imaara Shopping Mall, Mombasa Road"];
 
 export default async function Home() {
   const [{ data: products }, { data: featured }, { data: services }] = await Promise.all([

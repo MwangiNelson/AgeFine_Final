@@ -1,7 +1,7 @@
 import { SITE, whatsappLink, mapsDirectionsUrl, mapsEmbedUrl } from "@/lib/site";
 
 /**
- * "Find us" block: the clinic's real location (Imaara Mall, 2nd Floor,
+ * "Find us" block: the clinic's real location (Imaara Shopping Mall, 2nd Floor,
  * Mombasa Road) with an embedded map and one-tap directions / call /
  * WhatsApp actions. Used on the home and contact pages.
  */
@@ -49,7 +49,7 @@ export default function FindUs({ compact = false }: { compact?: boolean }) {
         </div>
 
         <p className="font-sans text-[12.5px] text-plum-soft leading-relaxed mt-5 mb-0">
-          Find us on the 2nd floor of Imaara Mall, along Mombasa Road — easy parking,
+          Find us on the 2nd floor of Imaara Shopping Mall, along Mombasa Road — easy parking,
           and a short ride from Imara Daima station.
         </p>
       </div>
@@ -57,7 +57,7 @@ export default function FindUs({ compact = false }: { compact?: boolean }) {
       {/* Map */}
       <div className="rounded-xl overflow-hidden border min-h-[280px]" style={{ borderColor: "var(--line)" }}>
         <iframe
-          title={`Map showing ${SITE.name} at Imaara Mall, Mombasa Road, Nairobi`}
+          title={`Map showing ${SITE.name} at Imaara Shopping Mall, Mombasa Road, Nairobi`}
           src={mapsEmbedUrl()}
           className="w-full h-full min-h-[280px] border-0"
           loading="lazy"
